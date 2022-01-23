@@ -1,0 +1,11 @@
+FROM debian:buster
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq && apt-get install -y apt-transport-https wget gnupg
+RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org buster main" >/etc/apt/sources.list.d/tor.list
+RUN wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/tor-archive-keyring.gpg >/dev/null
+RUN apt-get update -qq && apt-get install -y tor deb.torproject.org-keyring
+
+VOLUME /var/lib/tor
+
+ENTRYPOINT [ "tor" ]
+CMD [ "-f", "/etc/tor/torrc" ]

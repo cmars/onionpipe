@@ -1,0 +1,7 @@
+{{ $hostAddr := .HostAddress -}}
+{{ range .HiddenServices -}}
+HiddenServiceDir /var/lib/tor/{{.Name}}
+{{ range .Ports -}}
+HiddenServicePort {{.}} {{ $hostAddr }}:{{.}}
+{{ end }}
+{{ end }}
