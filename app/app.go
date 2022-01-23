@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strconv"
-	"strings"
 	"time"
 
+	"berty.tech/go-libtor"
 	"github.com/cretz/bine/tor"
-	"github.com/ipsn/go-libtor"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,54 +26,35 @@ func App() *cli.App {
 	}
 }
 
-type PortMap struct {
-	Local  int
-	Remote []int
-}
-
-func NewPortMap(s string) (*PortMap, error) {
-	localRemote := strings.SplitN(s, ":", 2)
-	if len(localRemote) == 0 {
-		return nil, fmt.Errorf("invalid port mapping %q", s)
-	}
-
-	localPort, err := strconv.Atoi(localRemote[0])
-	if err != nil {
-		return nil, fmt.Errorf("invalid local port %q", s)
-	}
-	if len(localRemote) == 1 {
-		return &PortMap{
-			Local:  localPort,
-			Remote: []int{localPort},
-		}, nil
-	}
-
-	portMap := &PortMap{
-		Local: localPort,
-	}
-	remotePortArgs := strings.Split(localRemote[1], ",")
-	for _, remotePortArg := range remotePortArgs {
-		remotePort, err := strconv.Atoi(remotePortArg)
-		if err != nil {
-			return nil, fmt.Errorf("invalid remote port %q", remotePortArg)
-		}
-		portMap.Remote = append(portMap.Remote, remotePort)
-	}
-	if len(portMap.Remote) == 0 {
-		portMap.Remote = []int{portMap.Local}
-	}
-	return portMap, nil
-}
-
 func Forward(ctx *cli.Context) error {
-	portMaps := map[int][]int{}
+	var exports []*ExportMap
+	var imports []*ImportMap
 	for i := 0; i < ctx.Args().Len(); i++ {
-		portMap, err := NewPortMap(ctx.Args().Get(i))
+		exportMap, importMap, err := ParsePortMap(ctx.Args().Get(i))
 		if err != nil {
 			return err
 		}
-		portMaps[portMap.Local] = portMap.Remote
+		if importMap != nil {
+			imports = append(imports, importMap)
+		}
+		if exportMap != nil {
+			exports = append(exports, exportMap)
+		}
 	}
+	if len(imports) > 0 {
+		return fmt.Errorf("import forwarding onions to local not supported yet")
+	}
+
+	exportForwards := map[string]map[int][]int{}
+	for _, exportMap := range exports {
+		portMap, ok := exportForwards[exportMap.LocalAddr]
+		if !ok {
+			portMap = map[int][]int{}
+			exportForwards[exportMap.LocalAddr] = portMap
+		}
+		portMap[exportMap.LocalPort] = exportMap.RemotePorts
+	}
+
 	torConf := &tor.StartConf{ProcessCreator: libtor.Creator}
 	if ctx.Bool("debug") {
 		torConf.DebugWriter = os.Stderr
@@ -91,27 +70,29 @@ func Forward(ctx *cli.Context) error {
 	publishCtx, cancel := context.WithTimeout(ctx.Context, 3*time.Minute)
 	defer cancel()
 
-	// Create an onion service to listen on any port but show as 80
-	fwd, err := t.Forward(publishCtx, &tor.ForwardConf{
-		LocalAddr: "127.0.0.1",
-		PortMap:   portMaps,
-		Version3:  true,
-	})
-	if err != nil {
-		return fmt.Errorf("Failed to create onion service: %v", err)
-	}
-	defer fwd.Close()
+	for localAddr, portMap := range exportForwards {
+		// Create an onion service to listen on any port but show as 80
+		fwd, err := t.Forward(publishCtx, &tor.ForwardConf{
+			LocalAddr: localAddr,
+			PortMap:   portMap,
+			Version3:  true,
+		})
+		if err != nil {
+			return fmt.Errorf("Failed to create onion service: %v", err)
+		}
+		defer fwd.Close()
 
-	fmt.Println("Forwarding local services:")
-	for localPort, remotePorts := range portMaps {
-		for _, remotePort := range remotePorts {
-			fmt.Printf("%s:%d => %v.onion:%d", fwd.LocalAddr, localPort, fwd.ID, remotePort)
+		for localPort, remotePorts := range portMap {
+			for _, remotePort := range remotePorts {
+				fmt.Printf("%s:%d => %v.onion:%d", localAddr, localPort, fwd.ID, remotePort)
+			}
 			fmt.Println()
 		}
 	}
 
 	fmt.Println()
 	waitForInterrupt()
+	fmt.Println("Interrupt received, shutting down")
 	return nil
 }
 
