@@ -85,12 +85,12 @@ oniongrok 8000=80@myhttpserver
 I'd also like to support more platforms, and eventually some package managers
 (brew, NixOS, choco).
 
-> How can I contribute?
+### How can I contribute?
 
 Pull requests are welcome in implementing the above wishlist / planned
 functionality.
 
-Otherwise, I'd only ask that you donate to the Tor project, with your dollar,
-or by hosting honest proxies and exit nodes. If you like and use this project,
-it only further proves the point that Tor is legitimate, essential, useful
-public infrastructure that benefits us all and needs our support.
+Otherwise, donate to the Tor project, with your dollar, or by hosting honest
+proxies and exit nodes. If you like and use this project, it only further
+proves the point that Tor is legitimate, essential, useful public
+infrastructure that benefits us all and needs our support.
