@@ -17,16 +17,20 @@ heavily firewalled environments (public WiFi, mobile tether), etc.
 
 With oniongrok, that service doesn't need a public IPv4 or IPv6 ingress. You'll
 eventually be able to restrict access with auth tokens. And you don't need to
-rely on 3rd-party services (like Tailscale, ZeroTier, etc.) to get to it.
+rely on, and share your personal data with for-profit services (like Tailscale,
+ZeroTier, etc.) to get to it.
 
-### How do I install it?
+### How do I build it?
 
-Currently supported on: Linux, Darwin, Android (gomobile)
+Should work on: Linux, Darwin, Android (gomobile) according to the
+[berty.tech/go-libtor](https://github.com/berty/go-libtor) README.
 
-    go install github.com/cmars/oniongrok/cmd/oniongrok@latest
+In a local clone of this project,
 
-This will take a long time because it is compiling tor and its dependencies
-into your binary with CGO.
+    go build .
+
+This will take a long time the first time you build, because it compiles CGO
+wrappers for Tor and its dependencies.
 
 You'll also need to have C library dependencies installed for the build to work:
 
@@ -35,8 +39,8 @@ You'll also need to have C library dependencies installed for the build to work:
 - libevent
 - zlib
 
-If you're on NixOS, run `nix-shell` in this directory to get these dependencies
-installed into your shell context before building & running.
+If you're on NixOS, you can run `nix-shell` in this directory to get these
+dependencies installed into your shell context before building.
 
 ### What can I do with it right now?
 
