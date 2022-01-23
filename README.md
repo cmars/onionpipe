@@ -5,7 +5,21 @@ Onion addresses for anything.
 `oniongrok` forwards ports on the local host to remote Onion addresses as Tor
 hidden services and vice-versa.
 
-> How do I install it?
+### Why would I want to use this?
+
+oniongrok is a purely decentralized way to create virtually unstoppable global
+network tunnels.
+
+For example, you might want to securely publish and access a personal service
+from anywhere in the world, across all sorts of network obstructions -- your
+ISP doesn't allow ingress traffic to your home lab, your clients might be in
+heavily firewalled environments (public WiFi, mobile tether), etc.
+
+With oniongrok, that service doesn't need a public IPv4 or IPv6 ingress. You'll
+eventually be able to restrict access with auth tokens. And you don't need to
+rely on 3rd-party services (like Tailscale, ZeroTier, etc.) to get to it.
+
+### How do I install it?
 
 Currently supported on: Linux, Darwin, Android (gomobile)
 
@@ -14,7 +28,7 @@ Currently supported on: Linux, Darwin, Android (gomobile)
 This will take a long time because it is compiling tor and its dependencies
 into your binary with CGO.
 
-> What can I do with it?
+### What can I do with it right now?
 
 Currently, you can publish local services as ephemeral Tor hidden services.
 
@@ -32,7 +46,7 @@ oniongrok 8000=80
 oniongrok 192.168.1.100:8000=80,8080,9000
 ```
 
-> What features are planned?
+### What features are planned?
 
 * Client authentication tokens
 * Reverse-forwarding (proxy Tor hidden services into the local network)
@@ -60,20 +74,6 @@ oniongrok 8000=80@myhttpserver
 
 I'd also like to support more platforms, and eventually some package managers
 (brew, NixOS, choco).
-
-> Why would I want to use this?
-
-oniongrok is a purely decentralized way to create virtually unstoppable global
-network tunnels.
-
-For example, you might want to securely publish and access a personal service
-from anywhere in the world, across all sorts of network obstructions -- your
-ISP doesn't allow ingress traffic to your home lab, your clients might be in
-heavily firewalled environments (public WiFi, mobile tether), etc.
-
-With oniongrok, that service doesn't need a public IPv4 or IPv6 ingress. You'll
-eventually be able to restrict access with auth tokens. And you don't need to
-rely on 3rd-party services (like Tailscale, ZeroTier, etc.) to get to it.
 
 > How can I contribute?
 
