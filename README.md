@@ -69,12 +69,13 @@ oniongrok 192.168.1.100:8000=80,8080,9000
 
 Running with Docker is similar, though you'll need to provide local interface
 IP addresses that route inside the container. Currently these are not DNS
-resolved.
+resolved, but if you know the address of your host on the container,
 
-If you're using Podman, exposing the local host network is probably not too
-unreasonable of a thing to do from a user-space container:
+    docker run --rm ghcr.io/cmars/oniongrok:main 192.168.65.1:8000
 
-    podman run --network=host oniongrok 8000 
+If you're using Podman, exposing the local host network is another option.
+
+    podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
 
 ### What features are planned?
 
@@ -82,8 +83,8 @@ unreasonable of a thing to do from a user-space container:
 * Reverse-forwarding (proxy Tor hidden services into the local network)
 * Configurable hops policy (trade anonymity for performance)
 * Persistent addresses.
-* Resolve names in local addresses; especially useful for Docker/Compose/k8s
-  use cases.
+* Resolve names for local bind addresses, useful for Docker/Compose/k8s use
+  cases.
 
 For example:
 
@@ -102,10 +103,14 @@ oniongrok xxx.onion:80=0.0.0.0:80
 
 # Persistent key stored as "myhttpserver" to $XDG_DATA_HOME/oniongrok/myhttpserver
 oniongrok 8000=80@myhttpserver
+
+# Forward port 80 on Docker host
+docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
+
 ```
 
 I'd also like to support more platforms, and eventually some package managers
-(brew, NixOS, choco).
+(brew, NixOS, choco if we get Windows).
 
 ### How can I contribute?
 
