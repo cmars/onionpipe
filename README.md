@@ -7,8 +7,8 @@ hidden services and vice-versa.
 
 ### Why would I want to use this?
 
-oniongrok is a purely decentralized way to create virtually unstoppable global
-network tunnels.
+oniongrok is a decentralized way to create virtually unstoppable global network
+tunnels.
 
 For example, you might want to securely publish and access a personal service
 from anywhere in the world, across all sorts of network obstructions -- your
@@ -27,6 +27,16 @@ Currently supported on: Linux, Darwin, Android (gomobile)
 
 This will take a long time because it is compiling tor and its dependencies
 into your binary with CGO.
+
+You'll also need to have C library dependencies installed for the build to work:
+
+- tor
+- openssl
+- libevent
+- zlib
+
+If you're on NixOS, run `nix-shell` in this directory to get these dependencies
+installed into your shell context before building & running.
 
 ### What can I do with it right now?
 
