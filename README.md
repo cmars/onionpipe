@@ -22,17 +22,19 @@ ZeroTier, etc.) to get to it.
 
 ### How do I build it?
 
+#### Local build
+
 Should work on: Linux, Darwin, Android (gomobile) according to the
 [berty.tech/go-libtor](https://github.com/berty/go-libtor) README.
 
 In a local clone of this project,
 
-    go build .
+    make
 
 This will take a long time the first time you build, because it compiles CGO
 wrappers for Tor and its dependencies.
 
-You'll also need to have C library dependencies installed for the build to work:
+You'll need to have C library dependencies installed for the build to work:
 
 - tor
 - openssl
@@ -40,7 +42,12 @@ You'll also need to have C library dependencies installed for the build to work:
 - zlib
 
 If you're on NixOS, you can run `nix-shell` in this directory to get these
-dependencies installed into your shell context before building.
+dependencies installed into your shell context.
+
+#### Docker
+
+The provided `Dockerfile` builds a minimal image that can run oniongrok in a
+container. Build is Debian-based, runtime is distroless.
 
 ### What can I do with it right now?
 
@@ -60,12 +67,23 @@ oniongrok 8000=80
 oniongrok 192.168.1.100:8000=80,8080,9000
 ```
 
+Running with Docker is similar, though you'll need to provide local interface
+IP addresses that route inside the container. Currently these are not DNS
+resolved.
+
+If you're using Podman, exposing the local host network is probably not too
+unreasonable of a thing to do from a user-space container:
+
+    podman run --network=host oniongrok 8000 
+
 ### What features are planned?
 
 * Client authentication tokens
 * Reverse-forwarding (proxy Tor hidden services into the local network)
 * Configurable hops policy (trade anonymity for performance)
 * Persistent addresses.
+* Resolve names in local addresses; especially useful for Docker/Compose/k8s
+  use cases.
 
 For example:
 
