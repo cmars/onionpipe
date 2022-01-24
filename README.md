@@ -121,7 +121,7 @@ I'd also like to support more platforms, and eventually some package managers
 Pull requests are welcome in implementing the above wishlist / planned
 functionality.
 
-Otherwise, donate to the Tor project, with your dollar, or by hosting honest
+Otherwise, donate to the Tor project with your dollar, or by hosting honest
 proxies and exit nodes. If you like and use this project, it only further
-proves the point that Tor is legitimate, essential, useful public
-infrastructure that benefits us all and needs our support.
+proves the point that Tor is essential public infrastructure that benefits us
+all and needs our support.
