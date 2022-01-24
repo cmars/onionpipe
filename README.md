@@ -72,6 +72,9 @@ oniongrok xxx.onion:80
 # Forward remote onion port 80 to local port 80 on all interfaces
 oniongrok xxx.onion:80=0.0.0.0:80
 
+# Forward port 80 on Docker host
+docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
+
 ```
 
 Running with Docker is similar, though you'll need to provide local interface
@@ -89,8 +92,6 @@ If you're using Podman, exposing the local host network is another option.
 * Client authentication tokens
 * Configurable hops policy (trade anonymity for performance)
 * Persistent addresses.
-* Resolve names for local bind addresses, useful for Docker/Compose/k8s use
-  cases.
 * Option to define forwards in a JSON or YAML config file
 
 For example:
@@ -104,9 +105,6 @@ oniongrok --auth-generate 22
 
 # Persistent key stored as "myhttpserver" to $XDG_DATA_HOME/oniongrok/myhttpserver
 oniongrok 8000=80@myhttpserver
-
-# Forward port 80 on Docker host
-docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
 
 # Operate from a yaml file.
 oniongrok --config config.yaml

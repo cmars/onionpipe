@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 )
@@ -39,6 +41,11 @@ func ParsePortMap(s string) (*ExportMap, *ImportMap, error) {
 		}
 		if host == "" {
 			host = "127.0.0.1"
+		} else {
+			host, err = resolveHost(host)
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 		return &ExportMap{
 			LocalAddr:   host,
@@ -79,6 +86,11 @@ func ParsePortMap(s string) (*ExportMap, *ImportMap, error) {
 		}
 		if fromHost == "" {
 			fromHost = "127.0.0.1"
+		} else {
+			fromHost, err = resolveHost(fromHost)
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 		if len(fromPorts) > 1 {
 			return nil, nil, fmt.Errorf("cannot forward multiple ports in single expression %q", s)
@@ -90,6 +102,17 @@ func ParsePortMap(s string) (*ExportMap, *ImportMap, error) {
 		}, nil, nil
 	}
 	return nil, nil, fmt.Errorf("invalid port map expression %q", s)
+}
+
+func resolveHost(host string) (string, error) {
+	addrs, err := net.DefaultResolver.LookupIP(context.Background(), "ip4", host)
+	if err != nil {
+		return "", err
+	}
+	if len(addrs) == 0 {
+		return "", fmt.Errorf("could not resolve %q", host)
+	}
+	return addrs[0].String(), nil
 }
 
 func isOnion(s string) bool {
