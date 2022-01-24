@@ -2,7 +2,11 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
+	"log"
+	"net"
 	"os"
 	"os/signal"
 	"time"
@@ -41,9 +45,6 @@ func Forward(ctx *cli.Context) error {
 			exports = append(exports, exportMap)
 		}
 	}
-	if len(imports) > 0 {
-		return fmt.Errorf("import forwarding onions to local not supported yet")
-	}
 
 	exportForwards := map[string]map[int][]int{}
 	for _, exportMap := range exports {
@@ -65,6 +66,64 @@ func Forward(ctx *cli.Context) error {
 		return fmt.Errorf("failed to start tor: %v", err)
 	}
 	defer t.Close()
+
+	importCtx, cancel := context.WithCancel(ctx.Context)
+	defer cancel()
+
+	for _, importMap := range imports {
+		l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", importMap.LocalAddr, importMap.LocalPort))
+		if err != nil {
+			return fmt.Errorf("failed to listen on local address %s:%d", importMap.LocalAddr, importMap.LocalPort)
+		}
+
+		remoteDialer, err := t.Dialer(importCtx, nil)
+		if err != nil {
+			return fmt.Errorf("failed to create tor network dialer")
+		}
+
+		go func() {
+			for {
+				localConn, err := l.Accept()
+				if err != nil {
+					if !errors.Is(err, net.ErrClosed) {
+						log.Printf("failed to accept on local address %s:%d", importMap.LocalAddr, importMap.LocalPort)
+					}
+					return
+				}
+				go func() {
+					defer localConn.Close()
+					remoteConn, err := remoteDialer.DialContext(importCtx, "tcp", fmt.Sprintf("%s:%d", importMap.RemoteAddr, importMap.RemotePort))
+					if err != nil {
+						log.Printf("failed to connect to onion address %s:%d", importMap.RemoteAddr, importMap.RemotePort)
+						return
+					}
+					defer remoteConn.Close()
+
+					recvDone := make(chan struct{})
+					go func() {
+						io.Copy(localConn, remoteConn)
+						close(recvDone)
+					}()
+					sendDone := make(chan struct{})
+					go func() {
+						io.Copy(remoteConn, localConn)
+						close(sendDone)
+					}()
+					select {
+					case <-recvDone:
+					case <-sendDone:
+					}
+				}()
+			}
+		}()
+
+		go func() {
+			<-importCtx.Done()
+			l.Close()
+		}()
+
+		fmt.Printf("%s:%d => %s:%d", importMap.RemoteAddr, importMap.RemotePort, importMap.LocalAddr, importMap.LocalPort)
+	}
 
 	// Wait at most a few minutes to publish the service
 	publishCtx, cancel := context.WithTimeout(ctx.Context, 3*time.Minute)
