@@ -72,20 +72,23 @@ oniongrok xxx.onion:80
 # Forward remote onion port 80 to local port 80 on all interfaces
 oniongrok xxx.onion:80=0.0.0.0:80
 
-# Forward port 80 on Docker host
-docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
-
 ```
 
-Running with Docker is similar, though you'll need to provide local interface
-IP addresses that route inside the container. Currently these are not DNS
-resolved, but if you know the address of your host on the container,
+Running with Docker is simple and easy, the only caveat is that its the
+container forwarding, so adjust local addresses accordingly. For example:
 
-    docker run --rm ghcr.io/cmars/oniongrok:main 192.168.65.1:8000
+```
+# Forward port 80 on Docker host
+docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
+```
 
 If you're using Podman, exposing the local host network is another option.
 
     podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
+
+Because local forwarding addresses are DNS resolved, it's very easy to publish
+hidden services from within Docker Compose or K8s. Check out this
+[nextcloud](examples/nextcloud/docker-compose.yml) example!
 
 ### What features are planned?
 
