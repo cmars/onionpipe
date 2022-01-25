@@ -88,7 +88,8 @@ If you're using Podman, exposing the local host network is another option.
 
 Because local forwarding addresses are DNS resolved, it's very easy to publish
 hidden services from within Docker Compose or K8s. Check out this
-[nextcloud](examples/nextcloud/docker-compose.yml) example!
+[nextcloud](examples/nextcloud/docker-compose.yml) example (watch the log for
+the onion address)!
 
 ### What features are planned?
 
