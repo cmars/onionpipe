@@ -46,14 +46,9 @@ func Forward(ctx *cli.Context) error {
 		}
 	}
 
-	exportForwards := map[string]map[int][]int{}
+	exportForwards := map[string][]int{}
 	for _, exportMap := range exports {
-		portMap, ok := exportForwards[exportMap.LocalAddr]
-		if !ok {
-			portMap = map[int][]int{}
-			exportForwards[exportMap.LocalAddr] = portMap
-		}
-		portMap[exportMap.LocalPort] = exportMap.RemotePorts
+		exportForwards[fmt.Sprintf("%s:%d", exportMap.LocalAddr, exportMap.LocalPort)] = exportMap.RemotePorts
 	}
 
 	torConf := &tor.StartConf{ProcessCreator: libtor.Creator}
@@ -129,22 +124,19 @@ func Forward(ctx *cli.Context) error {
 	publishCtx, cancel := context.WithTimeout(ctx.Context, 3*time.Minute)
 	defer cancel()
 
-	for localAddr, portMap := range exportForwards {
-		// Create an onion service to listen on any port but show as 80
-		fwd, err := t.Forward(publishCtx, &tor.ForwardConf{
-			LocalAddr: localAddr,
-			PortMap:   portMap,
-			Version3:  true,
-		})
-		if err != nil {
-			return fmt.Errorf("Failed to create onion service: %v", err)
-		}
-		defer fwd.Close()
+	// Create an onion service to listen on any port but show as 80
+	fwd, err := t.Forward(publishCtx, &tor.ForwardConf{
+		PortForwards: tor.PortForwardMap(exportForwards),
+		Version3:     true,
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to create onion service: %v", err)
+	}
+	defer fwd.Close()
 
-		for localPort, remotePorts := range portMap {
-			for _, remotePort := range remotePorts {
-				fmt.Printf("%s:%d => %v.onion:%d", localAddr, localPort, fwd.ID, remotePort)
-			}
+	for localAddr, remotePorts := range exportForwards {
+		for _, remotePort := range remotePorts {
+			fmt.Printf("%s => %v.onion:%d", localAddr, fwd.ID, remotePort)
 			fmt.Println()
 		}
 	}

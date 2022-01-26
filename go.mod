@@ -12,4 +12,4 @@ require (
 )
 
 // Pending https://github.com/cretz/bine/pull/60
-replace github.com/cretz/bine => github.com/cmars/bine v0.0.0-20220123065450-c094cc4fe044
+replace github.com/cretz/bine => ../bine
