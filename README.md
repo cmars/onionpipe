@@ -20,6 +20,51 @@ eventually be able to restrict access with auth tokens. And you don't need to
 rely on, and share your personal data with for-profit services (like Tailscale,
 ZeroTier, etc.) to get to it.
 
+### What can I do with it right now?
+
+Currently, you can publish local services as ephemeral Tor hidden services.
+
+For example:
+
+```
+# Forward localhost port 8000 to remote onion port 8000
+oniongrok 8000
+
+# Forward localhost port 8000 to remote onion port 80.
+# ~ is shorthand for the forward between source~destination.
+oniongrok 8000~80
+
+# Forward local interface 8000 to remote onion ports 80, 8080
+# and forward local port 9090 to remote port 9090.
+oniongrok 192.168.1.100:8000~80,8080,9000
+
+# Forward local UNIX socket to remote onion port.
+oniongrok /run/server.sock~80
+
+# Forward remote onion port 80 to localhost port 80
+oniongrok xxx.onion:80
+
+# Forward remote onion port 80 to local port 80 on all interfaces
+oniongrok xxx.onion:80~0.0.0.0:80
+```
+
+Running with Docker is simple and easy, the only caveat is that its the
+container forwarding, so adjust local addresses accordingly. For example:
+
+```
+# Forward port 80 on Docker host
+docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
+```
+
+If you're using Podman, exposing the local host network is another option.
+
+    podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
+
+Because local forwarding addresses are DNS resolved, it's very easy to publish
+hidden services from within Docker Compose or K8s. Check out this
+[nextcloud](examples/nextcloud/docker-compose.yml) example (watch the log for
+the onion address)!
+
 ### How do I build it?
 
 #### Local build
@@ -49,48 +94,6 @@ dependencies installed into your shell context.
 The provided `Dockerfile` builds a minimal image that can run oniongrok in a
 container. Build is Debian-based, runtime is distroless.
 
-### What can I do with it right now?
-
-Currently, you can publish local services as ephemeral Tor hidden services.
-
-For example:
-
-```
-# Forward localhost port 8000 to remote onion port 8000
-oniongrok 8000
-
-# Forward localhost port 8000 to remote onion port 80
-oniongrok 8000=80
-
-# Forward local interface 8000 to remote onion ports 80, 8080
-# and forward local port 9090 to remote port 9090.
-oniongrok 192.168.1.100:8000=80,8080,9000
-
-# Forward remote onion port 80 to localhost port 80
-oniongrok xxx.onion:80
-
-# Forward remote onion port 80 to local port 80 on all interfaces
-oniongrok xxx.onion:80=0.0.0.0:80
-
-```
-
-Running with Docker is simple and easy, the only caveat is that its the
-container forwarding, so adjust local addresses accordingly. For example:
-
-```
-# Forward port 80 on Docker host
-docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
-```
-
-If you're using Podman, exposing the local host network is another option.
-
-    podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
-
-Because local forwarding addresses are DNS resolved, it's very easy to publish
-hidden services from within Docker Compose or K8s. Check out this
-[nextcloud](examples/nextcloud/docker-compose.yml) example (watch the log for
-the onion address)!
-
 ### What features are planned?
 
 * Client authentication tokens
@@ -102,17 +105,16 @@ For example:
 
 ```
 # Forward auth-protected remote onion port 22 to localhost port 2222.
-oniongrok --auth hunter2 xxx.onion:22=2222
+oniongrok --auth hunter2 xxx.onion:22~2222
 
 # Forward local port 22, requiring auth to connect (token will be displayed)
 oniongrok --auth-generate 22
 
 # Persistent key stored as "myhttpserver" to $XDG_DATA_HOME/oniongrok/myhttpserver
-oniongrok 8000=80@myhttpserver
+oniongrok 8000~80@myhttpserver
 
 # Operate from a yaml file.
 oniongrok --config config.yaml
-
 ```
 
 I'd also like to support more platforms, and eventually some package managers

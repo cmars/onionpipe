@@ -9,6 +9,10 @@ oniongrok:
 docker:
 	docker build -t oniongrok .
 
+.PHONY: test
+test:
+	go test ./... -count=1
+
 .PHONY: clean
 clean:
 	$(RM) oniongrok
