@@ -36,7 +36,7 @@ oniongrok 8000~80
 
 # Forward local interface 8000 to remote onion ports 80, 8080
 # and forward local port 9090 to remote port 9090.
-oniongrok 192.168.1.100:8000~80,8080,9000
+oniongrok 192.168.1.100:8000~80,8080,9000 9090
 
 # Forward local UNIX socket to remote onion port.
 oniongrok /run/server.sock~80
