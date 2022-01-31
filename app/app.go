@@ -2,11 +2,11 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
+	"time"
 
-	"berty.tech/go-libtor"
-	"github.com/cretz/bine/tor"
 	"github.com/urfave/cli/v2"
 
 	"github.com/cmars/oniongrok/config"
@@ -27,7 +27,9 @@ func App() *cli.App {
 	}
 }
 
-func Forward(ctx *cli.Context) error {
+const startTorTimeout = time.Minute + 3
+
+func Forward(ctx *cli.Context) (cmdErr error) {
 	var fwds []*config.Forward
 	for i := 0; i < ctx.Args().Len(); i++ {
 		fwd, err := config.ParseForward(ctx.Args().Get(i))
@@ -40,16 +42,24 @@ func Forward(ctx *cli.Context) error {
 	fwdCtx, cancel := signal.NotifyContext(ctx.Context, os.Interrupt)
 	defer cancel()
 
-	torConf := &tor.StartConf{ProcessCreator: libtor.Creator}
+	var options []forwarding.TorOption
 	if ctx.Bool("debug") {
-		torConf.DebugWriter = os.Stderr
+		options = append(options, forwarding.TorDebug(os.Stderr))
 	}
-	fmt.Println("Starting tor...")
-	t, err := tor.Start(fwdCtx, torConf)
+
+	var stopped bool
+	log.Println("starting tor...")
+	t, err := forwarding.StartTor(nil, options...)
 	if err != nil {
 		return fmt.Errorf("failed to start tor: %v", err)
 	}
-	defer t.Close()
+	defer func() {
+		if !stopped {
+			if err := t.Close(); err != nil {
+				log.Println(err)
+			}
+		}
+	}()
 
 	svc := forwarding.New(t, fwds...)
 	onionID, err := svc.Start(fwdCtx)
@@ -62,8 +72,20 @@ func Forward(ctx *cli.Context) error {
 	}
 
 	fmt.Println()
-
-	<-fwdCtx.Done()
-	fmt.Println("Interrupt received, shutting down")
+	fmt.Println("press Ctrl-C twice to exit")
+	select {
+	case <-fwdCtx.Done():
+		log.Println("shutting down tor...")
+		go func() {
+			if err := t.Close(); err != nil {
+				log.Println(err)
+			}
+		}()
+		if err := t.Process.Wait(); err != nil {
+			log.Println(err)
+		}
+		stopped = true
+	}
+	log.Println("shutdown complete")
 	return nil
 }
