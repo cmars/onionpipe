@@ -12,6 +12,7 @@ RUN go mod download
 RUN go get -u -v -x berty.tech/go-libtor
 
 COPY . /src
+ENV SKIP_FORWARDING_TESTS=1
 RUN make all test
 WORKDIR /data
 RUN touch /data/.build
