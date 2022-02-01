@@ -38,9 +38,6 @@ oniongrok 8000~80
 # and forward local port 9090 to remote port 9090.
 oniongrok 192.168.1.100:8000~80,8080,9000 9090
 
-# Forward local UNIX socket to remote onion port.
-oniongrok /run/server.sock~80
-
 # Forward remote onion port 80 to localhost port 80
 oniongrok xxx.onion:80
 
@@ -67,14 +64,30 @@ the onion address)!
 
 ### How do I build it?
 
-#### Local build
+#### Docker
 
-Should work on: Linux, Darwin, Android (gomobile) according to the
-[berty.tech/go-libtor](https://github.com/berty/go-libtor) README.
+The provided `Dockerfile` builds a minimal image that can run oniongrok in a
+container with the latest Tor release from the Tor Project. Build and runtime
+is Debian-based.
+
+#### Local build
 
 In a local clone of this project,
 
-    make
+    make oniongrok
+
+The built binary `oniongrok` will require a `tor` daemon executable to be in
+your `$PATH`.
+
+#### Static standalone binary with libtor
+
+Should theoretically work on: Linux, Darwin, Android (gomobile) according to
+the [berty.tech/go-libtor](https://github.com/berty/go-libtor) README. There
+are some quirks; see comments in `tor/init_libtor.go` for details.
+
+In a local clone of this project,
+
+    make oniongrok_libtor
 
 This will take a long time the first time you build, because it compiles CGO
 wrappers for Tor and its dependencies.
@@ -89,13 +102,9 @@ You'll need to have C library dependencies installed for the build to work:
 If you're on NixOS, you can run `nix-shell` in this directory to get these
 dependencies installed into your shell context.
 
-#### Docker
-
-The provided `Dockerfile` builds a minimal image that can run oniongrok in a
-container. Build is Debian-based, runtime is distroless.
-
 ### What features are planned?
 
+* UNIX socket support
 * Client authentication tokens
 * Configurable hops policy (trade anonymity for performance)
 * Persistent addresses.
@@ -104,6 +113,9 @@ container. Build is Debian-based, runtime is distroless.
 For example:
 
 ```
+# Forward local UNIX socket to remote onion port.
+oniongrok /run/server.sock~80
+
 # Forward auth-protected remote onion port 22 to localhost port 2222.
 oniongrok --auth hunter2 xxx.onion:22~2222
 
@@ -117,8 +129,7 @@ oniongrok 8000~80@myhttpserver
 oniongrok --config config.yaml
 ```
 
-I'd also like to support more platforms, and eventually some package managers
-(brew, NixOS, choco if we get Windows).
+Considering support for distributions: NixOS, brew & choco
 
 ### How can I contribute?
 
@@ -126,6 +137,5 @@ Pull requests are welcome in implementing the above wishlist / planned
 functionality.
 
 Otherwise, donate to the Tor project with your dollar, or by hosting honest
-proxies and exit nodes. If you like and use this project, it only further
-proves the point that Tor is essential public infrastructure that benefits us
-all and needs our support.
+proxies and exit nodes. If you like and use this project, support the public
+infrastructure that benefits us all.
