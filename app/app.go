@@ -11,6 +11,7 @@ import (
 
 	"github.com/cmars/oniongrok/config"
 	"github.com/cmars/oniongrok/forwarding"
+	"github.com/cmars/oniongrok/tor"
 )
 
 func App() *cli.App {
@@ -42,14 +43,14 @@ func Forward(ctx *cli.Context) (cmdErr error) {
 	fwdCtx, cancel := signal.NotifyContext(ctx.Context, os.Interrupt)
 	defer cancel()
 
-	var options []forwarding.TorOption
+	var options []tor.Option
 	if ctx.Bool("debug") {
-		options = append(options, forwarding.TorDebug(os.Stderr))
+		options = append(options, tor.Debug(os.Stderr))
 	}
 
 	var stopped bool
 	log.Println("starting tor...")
-	t, err := forwarding.StartTor(nil, options...)
+	t, err := tor.Start(nil, options...)
 	if err != nil {
 		return fmt.Errorf("failed to start tor: %v", err)
 	}
@@ -72,16 +73,11 @@ func Forward(ctx *cli.Context) (cmdErr error) {
 	}
 
 	fmt.Println()
-	fmt.Println("press Ctrl-C twice to exit")
+	fmt.Println("press Ctrl-C to exit")
 	select {
 	case <-fwdCtx.Done():
 		log.Println("shutting down tor...")
-		go func() {
-			if err := t.Close(); err != nil {
-				log.Println(err)
-			}
-		}()
-		if err := t.Process.Wait(); err != nil {
+		if err := t.Close(); err != nil {
 			log.Println(err)
 		}
 		stopped = true

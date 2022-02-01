@@ -15,6 +15,7 @@ import (
 
 	"github.com/cmars/oniongrok/config"
 	"github.com/cmars/oniongrok/forwarding"
+	"github.com/cmars/oniongrok/tor"
 	qt "github.com/frankban/quicktest"
 	"golang.org/x/net/context/ctxhttp"
 )
@@ -60,13 +61,13 @@ func TestIntegration(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	c.Cleanup(cancel)
 
-	tor, err := forwarding.StartTor(ctx, forwarding.TorDebug(os.Stderr))
+	torSvc, err := tor.Start(ctx, tor.Debug(os.Stderr))
 	c.Assert(err, qt.IsNil)
 	c.Cleanup(func() {
 		// TODO: improve bine to support a context on Close
 		ch := make(chan struct{})
 		go func() {
-			err := tor.Close()
+			err := torSvc.Close()
 			c.Assert(err, qt.IsNil)
 			close(ch)
 		}()
@@ -108,7 +109,7 @@ func TestIntegration(t *testing.T) {
 	importFwd, err := importDoc.Forward()
 	c.Assert(err, qt.IsNil)
 
-	fwdSvc := forwarding.New(tor, exportFwd, importFwd)
+	fwdSvc := forwarding.New(torSvc, exportFwd, importFwd)
 
 	fwdCtx, cancel := context.WithTimeout(ctx, forwardTimeout)
 	c.Cleanup(cancel)
@@ -119,7 +120,7 @@ func TestIntegration(t *testing.T) {
 	c.Run("request exported service as onion", func(c *qt.C) {
 		clientCtx, cancel := context.WithTimeout(ctx, clientTimeout)
 		c.Cleanup(cancel)
-		clientDialer, err := tor.Dialer(clientCtx, nil)
+		clientDialer, err := torSvc.Dialer(clientCtx, nil)
 		c.Assert(err, qt.IsNil)
 		client := &http.Client{Transport: &http.Transport{DialContext: clientDialer.DialContext}}
 

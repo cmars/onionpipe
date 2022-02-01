@@ -1,9 +1,15 @@
 
 all: oniongrok
 
+oniongrok_libtor:
+	go build -o $@ -v -x -tags "staticOpenssl,staticZlib,staticLibevent,libtor" .
+	strip $@
+
+oniongrok_embed:
+	go build -o $@ -v -x -tags "embed" .
+
 oniongrok:
-	go build -v -x -tags "staticOpenssl,staticZlib,staticLibevent" .
-	strip oniongrok
+	go build -o $@ .
 
 .PHONY: docker
 docker:
