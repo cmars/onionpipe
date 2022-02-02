@@ -12,5 +12,5 @@ brews:
     name: homebrew-oniongrok
     branch: main
     token: "{{ .Env.TAP_GITHUB_TOKEN }}"
-    dependencies:
-    - tor
+  dependencies:
+  - tor
