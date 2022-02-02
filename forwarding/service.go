@@ -155,6 +155,9 @@ func (s *Service) startExporter(ctx context.Context) (*tor.OnionForward, error) 
 		if err != nil {
 			return nil, err
 		}
+		if export.Source().IsUnix() {
+			srcAddr = "unix:" + srcAddr
+		}
 		exportForwards[srcAddr] = export.Destination().Ports()
 	}
 

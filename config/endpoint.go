@@ -65,6 +65,11 @@ func (e *Endpoint) IsOnion() bool {
 	return e.onion
 }
 
+// IsUnix returns whether the endpoint is a unix socket.
+func (e *Endpoint) IsUnix() bool {
+	return e.path != ""
+}
+
 // Resolve validates the endpoint to ensure it is well-formed. For UNIX socket
 // endpoints, the socket path is validated for existence. For local network
 // TCP socket endpoints, the host is resolved to a network address according to

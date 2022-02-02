@@ -51,6 +51,14 @@ func TestIntegration(t *testing.T) {
 	srv := httptest.NewServer(testHandler)
 	c.Cleanup(srv.Close)
 
+	unixSrv := httptest.NewUnstartedServer(testHandler)
+	unixListener, err := net.Listen("unix", wd+"/test.sock")
+	c.Assert(err, qt.IsNil)
+	c.Cleanup(func() { unixListener.Close() })
+	unixSrv.Listener = unixListener
+	unixSrv.Start()
+	c.Cleanup(srv.Close)
+
 	// Find a likely open port for importing a remote server
 	l, err := net.Listen("tcp4", "127.0.0.1:0")
 	c.Assert(err, qt.IsNil)
@@ -95,6 +103,16 @@ func TestIntegration(t *testing.T) {
 	}
 	exportFwd, err := exportDoc.Forward()
 	c.Assert(err, qt.IsNil)
+	exportUnixDoc := config.ForwardDoc{
+		Src: config.EndpointDoc{
+			Path: wd + "/test.sock",
+		},
+		Dest: config.EndpointDoc{
+			Ports: []int{81},
+		},
+	}
+	exportUnixFwd, err := exportUnixDoc.Forward()
+	c.Assert(err, qt.IsNil)
 
 	importDoc := config.ForwardDoc{
 		Src: config.EndpointDoc{
@@ -109,7 +127,7 @@ func TestIntegration(t *testing.T) {
 	importFwd, err := importDoc.Forward()
 	c.Assert(err, qt.IsNil)
 
-	fwdSvc := forwarding.New(torSvc, exportFwd, importFwd)
+	fwdSvc := forwarding.New(torSvc, exportFwd, exportUnixFwd, importFwd)
 
 	fwdCtx, cancel := context.WithTimeout(ctx, forwardTimeout)
 	c.Cleanup(cancel)
@@ -125,6 +143,23 @@ func TestIntegration(t *testing.T) {
 		client := &http.Client{Transport: &http.Transport{DialContext: clientDialer.DialContext}}
 
 		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionID+".onion")
+		c.Assert(err, qt.IsNil)
+		defer resp.Body.Close()
+		respBody, err := ioutil.ReadAll(resp.Body)
+		c.Assert(err, qt.IsNil)
+
+		c.Assert(string(respBody), qt.Equals, "hello world")
+	})
+
+	// Request an exported unix socket through remote onion server
+	c.Run("request exported unix socket as onion", func(c *qt.C) {
+		clientCtx, cancel := context.WithTimeout(ctx, clientTimeout)
+		c.Cleanup(cancel)
+		clientDialer, err := torSvc.Dialer(clientCtx, nil)
+		c.Assert(err, qt.IsNil)
+		client := &http.Client{Transport: &http.Transport{DialContext: clientDialer.DialContext}}
+
+		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionID+".onion:81")
 		c.Assert(err, qt.IsNil)
 		defer resp.Body.Close()
 		respBody, err := ioutil.ReadAll(resp.Body)
