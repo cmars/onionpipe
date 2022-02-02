@@ -22,44 +22,63 @@ ZeroTier, etc.) to get to it.
 
 ### What can I do with it right now?
 
-Currently, you can publish local services as ephemeral Tor hidden services.
+oniongrok sets up socket forwarding tunnels. It's like `socat(1)`, for onions.
 
-For example:
+#### Export services on local networks to onion addresses
 
+Export localhost port 8000 to remote onion port 8000.
 ```
-# Forward localhost port 8000 to remote onion port 8000
 oniongrok 8000
+```
 
-# Forward localhost port 8000 to remote onion port 80.
-# ~ is shorthand for the forward between source~destination.
+Export localhost port 8000 to remote onion port 80. `~` is shorthand for the
+forward between source~destination.
+```
 oniongrok 8000~80
+```
 
-# Forward local interface 8000 to remote onion ports 80, 8080
-# and forward local port 9090 to remote port 9090.
+Export local interface 8000 to remote onion ports 80, 8080 and local
+port 9090 to remote port 9090, all on the same onion address.
+```
 oniongrok 192.168.1.100:8000~80,8080,9000 9090
+```
 
-# Forward remote onion port 80 to localhost port 80
-oniongrok xxx.onion:80
+Export a UNIX socket to an onion address.
+```
+oniongrok /run/server.sock~80
+```
 
-# Forward remote onion port 80 to local port 80 on all interfaces
-oniongrok xxx.onion:80~0.0.0.0:80
-
-# Forward local port 8000 to a non-anonymous remote onion service.
-# This option trades network privacy for possibly reduced latency.
+Export local port 8000 to a non-anonymous remote onion service. This option
+trades network privacy for possibly reduced latency.
+```
 oniongrok --anonymous=false 8000
 ```
 
-Running with Docker is simple and easy, the only caveat is that its the
-container forwarding, so adjust local addresses accordingly. For example:
+#### Import onion services to local network interfaces.
 
+Import a remote onion's port 80 to localhost port 80.
 ```
-# Forward port 80 on Docker host
+oniongrok xxx.onion:80
+```
+
+Import remote onion port 80 to local port 80 on all interfaces. This can be
+used for creating an ingress to the onion on public networks.
+```
+oniongrok xxx.onion:80~0.0.0.0:80
+```
+
+Running with Docker is simple and easy, the only caveat is that its the
+container forwarding, so adjust local addresses accordingly.
+
+Forward port 80 on Docker host.
+```
 docker run --rm ghcr.io/cmars/oniongrok:main host.docker.internal:80
 ```
 
 If you're using Podman, exposing the local host network is another option.
-
-    podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
+```
+podman run --network=host --rm ghcr.io/cmars/oniongrok:main 8000 
+```
 
 Because local forwarding addresses are DNS resolved, it's very easy to publish
 hidden services from within Docker Compose or K8s. Check out this
