@@ -3,7 +3,6 @@ name: goreleaser
 on:
   push:
     branches: [main]
-    tags: ['v*.*.*']
 
 permissions:
   contents: write
@@ -22,6 +21,20 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
+      - name: Configure Git
+        run: |
+          git config --global user.name "$GITHUB_ACTOR"
+          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Install ccv
+        run: go get github.com/smlx/ccv
+      - name: Bump tag if necessary
+        id: tag
+        run: |
+          if [ -z $(git tag -l $(ccv)) ]; then
+            git tag $(ccv)
+            git push --tags
+            echo "::set-output name=new::true"
+          fi
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
