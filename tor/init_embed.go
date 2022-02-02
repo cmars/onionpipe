@@ -1,4 +1,4 @@
-// +build embed,linux darwin,!windows
+// +build embed
 
 package tor
 

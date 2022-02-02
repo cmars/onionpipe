@@ -1,0 +1,13 @@
+builds:
+- binary: oniongrok
+  goos:
+  - darwin
+  - linux
+  - windows
+  goarch:
+  - amd64
+brews:
+- tap:
+    owner: cmars
+    name: homebrew-oniongrok
+    branch: main

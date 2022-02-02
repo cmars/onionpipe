@@ -1,4 +1,4 @@
-// +build libtor,linux darwin,!windows
+// +build libtor
 
 package tor
 
