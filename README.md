@@ -127,31 +127,34 @@ dependencies installed into your shell context.
 
 ### What features are planned?
 
-* UNIX socket support
-* Client authentication tokens
-* Persistent addresses.
-* Option to define forwards in a JSON or YAML config file
+#### Client authentication tokens
+[Client authentication](https://community.torproject.org/onion-services/advanced/client-auth/)
+is great for securing personal services over Tor.
 
-For example:
-
+Forward client auth-protected remote onion port 22 to localhost port 2222.
 ```
-# Forward local UNIX socket to remote onion port.
-oniongrok /run/server.sock~80
+oniongrok --auth-secret=xxx xxx.onion:22~2222
+```
 
-# Forward auth-protected remote onion port 22 to localhost port 2222.
-oniongrok --auth hunter2 xxx.onion:22~2222
+Forward local port 22, requiring auth to connect (auth-secret will be generated
+and displayed).
+```
+oniongrok --require-auth 22
+```
 
-# Forward local port 22, requiring auth to connect (token will be displayed)
-oniongrok --auth-generate 22
+#### Other ideas
 
-# Persistent key stored as "myhttpserver" to $XDG_DATA_HOME/oniongrok/myhttpserver
+Persistent key stored as "myhttpserver" to `$XDG_DATA_HOME/oniongrok/myhttpserver`
+```
 oniongrok 8000~80@myhttpserver
+```
 
-# Operate from a yaml file.
+Operate from a yaml file.
+```
 oniongrok --config config.yaml
 ```
 
-Considering support for distributions: NixOS, brew & choco
+Considering support for distributions: NixOS, brew & choco.
 
 ### How can I contribute?
 
