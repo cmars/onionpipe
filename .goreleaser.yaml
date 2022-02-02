@@ -11,3 +11,4 @@ brews:
     owner: cmars
     name: homebrew-oniongrok
     branch: main
+    token: "{{ .Env.TAP_GITHUB_TOKEN }}"
