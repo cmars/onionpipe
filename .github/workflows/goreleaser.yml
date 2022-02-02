@@ -26,7 +26,7 @@ jobs:
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
       - name: Install ccv
-        run: go get github.com/smlx/ccv
+        run: go install github.com/smlx/ccv@latest
       - name: Bump tag if necessary
         id: tag
         run: |
