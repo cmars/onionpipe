@@ -43,6 +43,10 @@ oniongrok xxx.onion:80
 
 # Forward remote onion port 80 to local port 80 on all interfaces
 oniongrok xxx.onion:80~0.0.0.0:80
+
+# Forward local port 8000 to a non-anonymous remote onion service.
+# This option trades network privacy for possibly reduced latency.
+oniongrok --anonymous=false 8000
 ```
 
 Running with Docker is simple and easy, the only caveat is that its the
@@ -106,7 +110,6 @@ dependencies installed into your shell context.
 
 * UNIX socket support
 * Client authentication tokens
-* Configurable hops policy (trade anonymity for performance)
 * Persistent addresses.
 * Option to define forwards in a JSON or YAML config file
 

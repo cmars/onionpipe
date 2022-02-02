@@ -20,6 +20,8 @@ type Service struct {
 	tor     *tor.Tor
 	imports []*config.Forward
 	exports []*config.Forward
+
+	nonAnonymous bool
 }
 
 // New returns a new forwarding service.
@@ -39,10 +41,27 @@ func New(t *tor.Tor, fwds ...*config.Forward) *Service {
 	}
 }
 
+// Option is an option that configures Tor.
+type Option func(s *Service)
+
+// NonAnonymous configures this service to forward as a non-anonymous service.
+// The use of this option requires tor.Start to have been configured with
+// tor.NonAnonymous. Import forwards are also not allowed with this option,
+// because Tor will not accept Socks proxy connections in this mode.
+func NonAnonymous(s *Service) {
+	s.nonAnonymous = true
+}
+
 // Start starts forwarding.
-func (s *Service) Start(ctx context.Context) (string, error) {
+func (s *Service) Start(ctx context.Context, options ...Option) (string, error) {
+	for i := range options {
+		options[i](s)
+	}
 	// Start import forwarding
 	for _, importFwd := range s.imports {
+		if s.nonAnonymous {
+			return "", fmt.Errorf("import forwards not supported in non-anonymous single-hop mode")
+		}
 		err := s.startImporter(ctx, s.tor, importFwd)
 		if err != nil {
 			return "", err
@@ -143,6 +162,7 @@ func (s *Service) startExporter(ctx context.Context) (*tor.OnionForward, error) 
 	fwd, err := s.tor.Forward(exportCtx, &tor.ForwardConf{
 		PortForwards: exportForwards,
 		Version3:     true,
+		NonAnonymous: s.nonAnonymous,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create onion forward: %v", err)
