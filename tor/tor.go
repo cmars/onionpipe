@@ -10,6 +10,9 @@ import (
 
 var processOption Option
 
+// Tor represents a controller over a local Tor node.
+type Tor = tor.Tor
+
 // Option is an option that configures Tor.
 type Option func(*tor.StartConf)
 

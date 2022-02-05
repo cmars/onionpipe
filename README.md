@@ -26,19 +26,30 @@ oniongrok sets up socket forwarding tunnels. It's like `socat(1)`, for onions.
 
 #### Export services on local networks to onion addresses
 
-Export localhost port 8000 to remote onion port 8000.
+Export localhost port 8000 to a temporary, one-time remote onion address.
 ```
 oniongrok 8000
 ```
 
-Export localhost port 8000 to remote onion port 80. `~` is shorthand for the
-forward between source~destination.
+Export localhost port 8000 to temporary remote onion port 80. `~` is shorthand
+for the forward between source~destination.
 ```
 oniongrok 8000~80
 ```
 
-Export local interface 8000 to remote onion ports 80, 8080 and local
-port 9090 to remote port 9090, all on the same onion address.
+Export localhost port 8000 to a persistent remote onion address nicknamed
+'my-app'.
+```
+oniongrok 8000~80@my-app
+```
+
+Nicknames can be re-used in multiple forwarding expressions to reference the
+same onion address. Let's set up a little web forum for our Minecraft server.
+```
+oniongrok 8000~80@minecraft 25565@minecraft
+```
+
+All the forwards without nicknames use the same temporary address.
 ```
 oniongrok 192.168.1.100:8000~80,8080,9000 9090
 ```
@@ -48,8 +59,8 @@ Export a UNIX socket to an onion address.
 oniongrok /run/server.sock~80
 ```
 
-Export local port 8000 to a non-anonymous remote onion service. This option
-trades network privacy for possibly reduced latency.
+Export to a non-anonymous remote onion service, trading network privacy for
+possibly reduced latency.
 ```
 oniongrok --anonymous=false 8000
 ```

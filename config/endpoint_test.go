@@ -105,6 +105,22 @@ func TestEndpoint(t *testing.T) {
 		resolved:   &Endpoint{path: socketPath, resolved: true},
 		singleAddr: socketPath,
 	}, {
+		name:          "aliased onion dest, single port",
+		in:            "8000@wallabag",
+		dest:          true,
+		parsed:        &Endpoint{ports: []int{8000}, dest: true, alias: "wallabag"},
+		asOnion:       true,
+		resolved:      &Endpoint{ports: []int{8000}, dest: true, alias: "wallabag", onion: true, resolved: true},
+		singleAddrErr: "onion destination",
+	}, {
+		name:          "aliased onion dest, multi port",
+		in:            "80,8000,8080@discourse",
+		dest:          true,
+		parsed:        &Endpoint{ports: []int{80, 8000, 8080}, dest: true, alias: "discourse"},
+		asOnion:       true,
+		resolved:      &Endpoint{ports: []int{80, 8000, 8080}, dest: true, alias: "discourse", onion: true, resolved: true},
+		singleAddrErr: "onion destination",
+	}, {
 		/* Semantically invalid endpoints */
 		name:       "onion dest w/host, single port",
 		in:         "xxx.onion:8000",
@@ -139,6 +155,32 @@ func TestEndpoint(t *testing.T) {
 		in:       socketPath + ":8000",
 		dest:     false,
 		parseErr: `UNIX socket does not exist: .*`,
+	}, {
+		name:     "aliased non-onion dest",
+		in:       "1.2.3.4:5432@postgres",
+		dest:     true,
+		parseErr: "only remote onions can be aliased",
+	}, {
+		/* Syntactically invalid */
+		name:     "empty w/alias",
+		in:       "@what",
+		dest:     true,
+		parseErr: "only remote onions can be aliased",
+	}, {
+		name:     "empty w/out alias",
+		in:       "",
+		dest:     true,
+		parseErr: "missing value",
+	}, {
+		name:     ":",
+		in:       ":",
+		dest:     true,
+		parseErr: `invalid port.*`,
+	}, {
+		name:     "::",
+		in:       "::",
+		dest:     true,
+		parseErr: `invalid port.*`,
 	}}
 	for i, test := range tests {
 		c.Run(fmt.Sprintf("%d %s", i, test.name), func(c *qt.C) {

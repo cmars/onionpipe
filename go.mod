@@ -7,6 +7,7 @@ require (
 	github.com/cretz/bine v0.2.1-0.20220128135240-9267b2d1462d
 	github.com/frankban/quicktest v1.14.0
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
