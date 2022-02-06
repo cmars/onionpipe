@@ -142,23 +142,7 @@ dependencies installed into your shell context.
 [Client authentication](https://community.torproject.org/onion-services/advanced/client-auth/)
 is great for securing personal services over Tor.
 
-Forward client auth-protected remote onion port 22 to localhost port 2222.
-```
-oniongrok --auth-secret=xxx xxx.onion:22~2222
-```
-
-Forward local port 22, requiring auth to connect (auth-secret will be generated
-and displayed).
-```
-oniongrok --require-auth 22
-```
-
 #### Other ideas
-
-Persistent key stored as "myhttpserver" to `$XDG_DATA_HOME/oniongrok/myhttpserver`
-```
-oniongrok 8000~80@myhttpserver
-```
 
 Operate from a yaml file.
 ```
