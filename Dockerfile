@@ -8,9 +8,9 @@ RUN apt-get update -qq && apt-get install -y tor deb.torproject.org-keyring
 
 FROM golang:1.17-bullseye as build
 WORKDIR /src
-COPY go.* /src
+COPY go.* /src/
 RUN go mod download
-COPY . /src
+COPY . /src/
 ENV SKIP_FORWARDING_TESTS=1
 RUN make all test
 WORKDIR /data
