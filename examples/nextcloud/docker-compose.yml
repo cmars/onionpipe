@@ -3,12 +3,15 @@ version: '3'
 volumes:
   nextcloud:
   db:
+  oniongrok:
 
 services:
   oniongrok:
     image: ghcr.io/cmars/oniongrok:main
     restart: always
-    command: app:80=80
+    command: --secrets /var/lib/oniongrok/secrets.json app:80~80@nextcloud
+    volumes:
+      - oniongrok:/var/lib/oniongrok
 
   db:
     image: mariadb
@@ -17,8 +20,8 @@ services:
     volumes:
       - db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=hunter2
-      - MYSQL_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_PASSWORD=changeme
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
@@ -32,7 +35,7 @@ services:
     volumes:
       - nextcloud:/var/www/html
     environment:
-      - MYSQL_PASSWORD=
+      - MYSQL_PASSWORD=changeme
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
