@@ -14,16 +14,16 @@ services:
       - oniongrok:/var/lib/oniongrok
 
   db:
-    image: mariadb
+    image: postgres
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
-      - db:/var/lib/mysql
+      - db:/var/lib/postgresql/data
+    ports:
+      - '5432'
     environment:
-      - MYSQL_ROOT_PASSWORD=changeme
-      - MYSQL_PASSWORD=changeme
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=nextcloud
 
   app:
     image: nextcloud
@@ -35,7 +35,7 @@ services:
     volumes:
       - nextcloud:/var/www/html
     environment:
-      - MYSQL_PASSWORD=changeme
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=db
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_HOST=db
