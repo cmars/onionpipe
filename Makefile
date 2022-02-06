@@ -19,6 +19,12 @@ docker:
 test:
 	go test ./... -count=1
 
+.PHONY: coverage
+coverage:
+	go test ./... -count=1 -coverprofile=covfile
+	go tool cover -html=covfile
+	rm -f covfile
+
 .PHONY: clean
 clean:
 	$(RM) oniongrok

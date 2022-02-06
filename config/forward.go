@@ -57,10 +57,10 @@ func (d *ForwardDoc) Forward() (*Forward, error) {
 }
 
 // Description returns a string description of the forward. If the forward
-// destination is an onion, the remote onion ID may be provided to render its
-// assigned hostname.
-func (f *Forward) Description(remoteOnion string) string {
-	return fmt.Sprintf("%s => %s", f.src.Description(""), f.dest.Description(remoteOnion))
+// destination is an onion, a mapping of alias to remote onion ID may be
+// provided, to render the assigned onion address.
+func (f *Forward) Description(remoteOnions map[string]string) string {
+	return fmt.Sprintf("%s => %s", f.src.Description(nil), f.dest.Description(remoteOnions))
 }
 
 // ParseForward returns a new Forward parsed from a string representation

@@ -21,9 +21,11 @@ type Endpoint struct {
 	ports []int
 	path  string
 
-	dest     bool
-	onion    bool
-	resolved bool
+	dest       bool
+	onion      bool
+	resolved   bool
+	alias      string
+	serviceKey []byte
 }
 
 // EndpointDoc defines a JSON representation of an endpoint.
@@ -31,6 +33,7 @@ type EndpointDoc struct {
 	Host  string `json:"host"`
 	Ports []int  `json:"ports"`
 	Path  string `json:"unix"`
+	Alias string `json:"alias"`
 }
 
 // Endpoint returns a validated and resolved Endpoint from a JSON document
@@ -68,6 +71,21 @@ func (e *Endpoint) IsOnion() bool {
 // IsUnix returns whether the endpoint is a unix socket.
 func (e *Endpoint) IsUnix() bool {
 	return e.path != ""
+}
+
+// Alias returns the endpoint's alias, if it has one.
+func (e *Endpoint) Alias() string {
+	return e.alias
+}
+
+// SetServiceKey sets the remote endpoint's service key.
+func (e *Endpoint) SetServiceKey(key []byte) {
+	e.serviceKey = key
+}
+
+// ServiceKey gets the remote endpoint's service key. May be nil.
+func (e *Endpoint) ServiceKey() []byte {
+	return e.serviceKey
 }
 
 // Resolve validates the endpoint to ensure it is well-formed. For UNIX socket
@@ -184,16 +202,16 @@ func (e *Endpoint) SingleAddr() (string, error) {
 	return "", fmt.Errorf("unresolved endpoint")
 }
 
-// Description returns a string description of the endpoint. If the endpoint is
-// an onion destination, the remote onion ID may be provided to render its
-// assigned hostname.
-func (e *Endpoint) Description(remoteOnion string) string {
+// Description returns a string description of the endpoint. If the endpoint
+// destination is an onion, a mapping of alias to remote onion ID may be
+// provided, to render the assigned onion address.
+func (e *Endpoint) Description(remoteOnions map[string]string) string {
 	if e.onion && e.dest {
 		ports := make([]string, len(e.ports))
 		for i := range e.ports {
 			ports[i] = strconv.Itoa(e.ports[i])
 		}
-		return fmt.Sprintf("%s.onion:%s", remoteOnion, strings.Join(ports, ","))
+		return fmt.Sprintf("%s.onion:%s", remoteOnions[e.alias], strings.Join(ports, ","))
 	}
 	addr, err := e.SingleAddr()
 	if err != nil {
@@ -216,13 +234,23 @@ func ParseEndpoint(s string, dest bool) (*Endpoint, error) {
 		return nil, fmt.Errorf("missing value")
 	}
 
+	var alias string
+	if parts := strings.Split(s, "@"); len(parts) == 2 {
+		s = parts[0]
+		alias = parts[1]
+	}
+
 	// Check for a remote port list to be exported
 	if remotePortsRE.MatchString(s) {
 		ports, err := parsePortList(s)
 		if err != nil {
 			return nil, err
 		}
-		return &Endpoint{ports: ports, dest: dest}, nil
+		return &Endpoint{ports: ports, dest: dest, alias: alias}, nil
+	}
+
+	if alias != "" {
+		return nil, fmt.Errorf("only remote onions can be aliased")
 	}
 
 	// Check for a local UNIX socket

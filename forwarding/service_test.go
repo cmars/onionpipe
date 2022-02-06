@@ -13,11 +13,12 @@ import (
 	"testing"
 	"time"
 
+	qt "github.com/frankban/quicktest"
+	"golang.org/x/net/context/ctxhttp"
+
 	"github.com/cmars/oniongrok/config"
 	"github.com/cmars/oniongrok/forwarding"
 	"github.com/cmars/oniongrok/tor"
-	qt "github.com/frankban/quicktest"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 const skipForwardingTests = "SKIP_FORWARDING_TESTS"
@@ -131,7 +132,7 @@ func TestIntegration(t *testing.T) {
 
 	fwdCtx, cancel := context.WithTimeout(ctx, forwardTimeout)
 	c.Cleanup(cancel)
-	onionID, err := fwdSvc.Start(fwdCtx)
+	onionIDs, err := fwdSvc.Start(fwdCtx)
 	c.Assert(err, qt.IsNil)
 
 	// Request the exported, remote onion server
@@ -142,7 +143,7 @@ func TestIntegration(t *testing.T) {
 		c.Assert(err, qt.IsNil)
 		client := &http.Client{Transport: &http.Transport{DialContext: clientDialer.DialContext}}
 
-		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionID+".onion")
+		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionIDs[""]+".onion")
 		c.Assert(err, qt.IsNil)
 		defer resp.Body.Close()
 		respBody, err := ioutil.ReadAll(resp.Body)
@@ -159,7 +160,7 @@ func TestIntegration(t *testing.T) {
 		c.Assert(err, qt.IsNil)
 		client := &http.Client{Transport: &http.Transport{DialContext: clientDialer.DialContext}}
 
-		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionID+".onion:81")
+		resp, err := ctxhttp.Get(clientCtx, client, "http://"+onionIDs[""]+".onion:81")
 		c.Assert(err, qt.IsNil)
 		defer resp.Body.Close()
 		respBody, err := ioutil.ReadAll(resp.Body)
