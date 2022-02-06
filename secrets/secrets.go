@@ -3,11 +3,13 @@ package secrets
 
 import (
 	"crypto/rand"
+	"encoding/base32"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/crypto/ed25519"
 )
@@ -90,4 +92,35 @@ func (s *Secrets) EnsureServiceKey(name string) ([]byte, error) {
 	s.ServiceKeys[name] = []byte(priv)
 	s.changed = true
 	return []byte(priv), nil
+}
+
+// RemoveServiceKey removes the service private key for the given alias name.
+func (s *Secrets) RemoveServiceKey(name string) error {
+	if _, ok := s.ServiceKeys[name]; !ok {
+		return fmt.Errorf("key %q not found", name)
+	}
+	delete(s.ServiceKeys, name)
+	s.changed = true
+	return nil
+}
+
+// ServicesPublic represent public key information about services.
+type ServicesPublic map[string]ServicePublic
+
+// ServicePublic represents public key information about a service.
+type ServicePublic struct {
+	Address string `json:"address"`
+}
+
+// ServicesPublic returns public key information about the service keys.
+func (s *Secrets) ServicesPublic() ServicesPublic {
+	services := ServicesPublic{}
+	for name, serviceKey := range s.ServiceKeys {
+		pubKey := ed25519.PrivateKey(serviceKey).Public().(ed25519.PublicKey)
+		services[name] = ServicePublic{
+			Address: strings.ToLower(
+				base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(pubKey[:])),
+		}
+	}
+	return services
 }
