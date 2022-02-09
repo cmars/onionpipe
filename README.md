@@ -96,7 +96,15 @@ hidden services from within Docker Compose or K8s. Check out this
 [nextcloud](examples/nextcloud/docker-compose.yml) example (watch the log for
 the onion address)!
 
-### How do I build it?
+### How do I install it?
+
+Each commit into main triggers an automated release, which publishes a Homebrew
+tap and Docker image.
+
+#### Homebrew
+
+    brew tap cmars/oniongrok
+    brew install oniongrok
 
 #### Docker
 
