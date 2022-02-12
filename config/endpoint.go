@@ -68,6 +68,15 @@ func (e *Endpoint) IsOnion() bool {
 	return e.onion
 }
 
+// OnionID returns the onion ID (host without the .onion suffix) and whether
+// the host is an onion.
+func (e *Endpoint) OnionID() (string, bool) {
+	if !e.IsOnion() {
+		return "", false
+	}
+	return strings.TrimSuffix(e.host, ".onion"), true
+}
+
 // IsUnix returns whether the endpoint is a unix socket.
 func (e *Endpoint) IsUnix() bool {
 	return e.path != ""

@@ -26,6 +26,14 @@ var forwardFlags = []cli.Flag{
 		Name:  "secrets",
 		Usage: "path where service and client secrets are stored",
 	},
+	&cli.StringSliceFlag{
+		Name:  "require-auth",
+		Usage: "require client authorization from public keys for all exported onion services",
+	},
+	&cli.StringFlag{
+		Name:  "auth",
+		Usage: "import onion services with this client authorization (name or private key)",
+	},
 }
 
 func defaultSecretsPath() string {
@@ -60,8 +68,8 @@ func App() *cli.App {
 				Action:  ListServiceKeys,
 			}, {
 				Name:    "new",
-				Aliases: []string{"add", "create"},
-				Usage:   "new onion service",
+				Aliases: []string{"create"},
+				Usage:   "create a new onion service",
 				Action:  NewServiceKey,
 			}, {
 				Name:    "remove",
@@ -70,6 +78,31 @@ func App() *cli.App {
 				Action:  RemoveServiceKey,
 			}},
 			Action: ListServiceKeys,
+		}, {
+			Name:  "client",
+			Usage: "manage client identities",
+			Subcommands: []*cli.Command{{
+				Name:    "list",
+				Aliases: []string{"ls"},
+				Usage:   "list client identity public keys",
+				Action:  ListClientKeys,
+			}, {
+				Name:    "new",
+				Aliases: []string{"create"},
+				Usage:   "create a new client identity key pair",
+				Action:  NewClientKey,
+			}, {
+				Name:    "show-private-key",
+				Aliases: []string{"show-private"},
+				Usage:   "show private key",
+				Action:  ShowPrivateClientKey,
+			}, {
+				Name:    "remove",
+				Aliases: []string{"rm"},
+				Usage:   "remove client identity",
+				Action:  RemoveClientKey,
+			}},
+			Action: ListClientKeys,
 		}},
 	}
 }

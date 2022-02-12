@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	berty.tech/go-libtor v1.0.385
-	github.com/cretz/bine v0.2.1-0.20220128135240-9267b2d1462d
+	github.com/cretz/bine v0.2.1-0.20220211152646-874b17b5a830
 	github.com/frankban/quicktest v1.14.0
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect

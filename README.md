@@ -96,6 +96,48 @@ hidden services from within Docker Compose or K8s. Check out this
 [nextcloud](examples/nextcloud/docker-compose.yml) example (watch the log for
 the onion address)!
 
+#### Client auth
+[Client auth](https://community.torproject.org/onion-services/advanced/client-auth/)
+is great for securing personal services over Tor. How to use it:
+
+Alice creates a new client auth public key pair.
+
+```
+oniongrok client new alice
+```
+
+```
+{
+  "alice": {
+    "identity": "p2pof7vumwsrqqavtovfwqqaw6cqzvtqqe7cjvxt754k6j7blufa"
+  }
+}
+```
+
+Alice shares this public key with Bob, who forwards an onion service that only
+Alice can use.
+
+```
+oniongrok --require-auth p2pof7vumwsrqqavtovfwqqaw6cqzvtqqe7cjvxt754k6j7blufa 8000~80@test
+```
+
+```
+2022/02/13 21:25:46 starting tor...
+127.0.0.1:8000 => sd6aq2r6jvuoeisrudq7jbqufjh6nck5buuzjmgalicgwrobgfj4lkqd.onion:80
+```
+
+Alice can use her client private key to connect to this onion and forward to a
+local port.
+
+```
+oniongrok --auth alice sd6aq2r6jvuoeisrudq7jbqufjh6nck5buuzjmgalicgwrobgfj4lkqd.onion:80~7000
+```
+
+```
+2022/02/13 21:29:17 starting tor...
+sd6aq2r6jvuoeisrudq7jbqufjh6nck5buuzjmgalicgwrobgfj4lkqd.onion:80 => 127.0.0.1:7000
+```
+
 ### How do I install it?
 
 Each commit into main triggers an automated release, which publishes a Homebrew
@@ -146,18 +188,13 @@ dependencies installed into your shell context.
 
 ### What features are planned?
 
-#### Client authentication tokens
-[Client authentication](https://community.torproject.org/onion-services/advanced/client-auth/)
-is great for securing personal services over Tor.
-
-#### Other ideas
-
 Operate from a yaml file.
+
 ```
 oniongrok --config config.yaml
 ```
 
-Considering support for distributions: NixOS, brew & choco.
+Considering a TUI.
 
 ### How can I contribute?
 
