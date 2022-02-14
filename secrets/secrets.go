@@ -12,15 +12,23 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/ed25519"
+	"golang.org/x/crypto/nacl/box"
 )
 
 // Secrets represents the format for storing oniongrok secret keys.
 type Secrets struct {
-	Version     string            `json:"version"`
-	ServiceKeys map[string][]byte `json:"serviceKeys"`
+	Version     string                   `json:"version"`
+	ServiceKeys map[string][]byte        `json:"serviceKeys"`
+	ClientKeys  map[string]ClientKeyPair `json:"clientKeys"`
 
 	path    string
 	changed bool
+}
+
+// ClientKeyPair represents an x25519 key pair used for client authorization.
+type ClientKeyPair struct {
+	Public  []byte `json:"public"`
+	Private []byte `json:"private"`
 }
 
 // ReadFile reads secrets from the given path.
@@ -123,4 +131,74 @@ func (s *Secrets) ServicesPublic() ServicesPublic {
 		}
 	}
 	return services
+}
+
+// EnsureClientKey returns the client private key for the given alias name,
+// generating a new one if it did not exist.
+func (s *Secrets) EnsureClientKey(name string) (ClientKeyPair, error) {
+	if s.ClientKeys == nil {
+		s.ClientKeys = map[string]ClientKeyPair{}
+	} else if key, ok := s.ClientKeys[name]; ok {
+		return key, nil
+	}
+	pub, priv, err := box.GenerateKey(rand.Reader)
+	if err != nil {
+		return ClientKeyPair{}, err
+	}
+	keyPair := ClientKeyPair{
+		Public:  pub[:],
+		Private: priv[:],
+	}
+	s.ClientKeys[name] = keyPair
+	s.changed = true
+	return keyPair, nil
+}
+
+// ResolveClientPrivateKey returns the x25519 client authorization private key
+// for the given identity name, or base32-encoded private key representation.
+func (s *Secrets) ResolveClientPrivateKey(nameOrKey string) ([]byte, error) {
+	if key, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(strings.ToUpper(nameOrKey)); err == nil {
+		if len(key) == 32 {
+			return key, nil
+		}
+	}
+	if keyPair, ok := s.ClientKeys[nameOrKey]; ok {
+		return keyPair.Private, nil
+	}
+	return nil, fmt.Errorf("failed to resolve client key %q", nameOrKey)
+}
+
+// RemoveClientKey removes the client private key for the given alias name.
+func (s *Secrets) RemoveClientKey(name string) error {
+	if _, ok := s.ClientKeys[name]; !ok {
+		return fmt.Errorf("key %q not found", name)
+	}
+	delete(s.ClientKeys, name)
+	s.changed = true
+	return nil
+}
+
+// ClientsPublic represent client public key identities that can be authorized
+// to access onion services.
+type ClientsPublic map[string]ClientPublic
+
+// ClientPublic represents a client public key identity, that can be authorized
+// to access onion services.
+type ClientPublic struct {
+	Identity string `json:"identity"`
+}
+
+// ClientsPublic returns public key information about the client identities
+// held in this secret store. Clients' public keys would be shared with the
+// operator of an authenticated onion service, for granting exclusive access to
+// these key identities.
+func (s *Secrets) ClientsPublic() ClientsPublic {
+	clients := ClientsPublic{}
+	for name, keyPair := range s.ClientKeys {
+		clients[name] = ClientPublic{
+			Identity: strings.ToLower(
+				base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(keyPair.Public)),
+		}
+	}
+	return clients
 }

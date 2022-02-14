@@ -2,10 +2,12 @@ package app
 
 import (
 	"context"
+	"encoding/base32"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 
@@ -32,6 +34,7 @@ type forwardingService interface {
 func Forward(ctx *cli.Context) (cmdErr error) {
 	var fwds []*config.Forward
 	var sec *secrets.Secrets
+	var err error
 	for i := 0; i < ctx.Args().Len(); i++ {
 		fwd, err := config.ParseForward(ctx.Args().Get(i))
 		if err != nil {
@@ -57,6 +60,23 @@ func Forward(ctx *cli.Context) (cmdErr error) {
 		if err := sec.WriteFile(); err != nil {
 			return err
 		}
+	} else if ctx.String("auth") != "" {
+		// Open secrets if we haven't already, used to resolve clients below
+		sec, err = openSecrets(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	var requireAuth []string
+	if authValues := ctx.StringSlice("require-auth"); len(authValues) > 0 {
+		for _, v := range authValues {
+			_, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(strings.ToUpper(v))
+			if err != nil {
+				return fmt.Errorf("invalid client auth %q: %w", v, err)
+			}
+			requireAuth = append(requireAuth, v)
+		}
 	}
 
 	fwdCtx, cancel := signal.NotifyContext(ctx.Context, os.Interrupt)
@@ -70,6 +90,25 @@ func Forward(ctx *cli.Context) (cmdErr error) {
 	if !ctx.Bool("anonymous") {
 		torOptions = append(torOptions, tor.NonAnonymous)
 		fwdOptions = append(fwdOptions, forwarding.NonAnonymous)
+	}
+	if useAuth := ctx.String("auth"); useAuth != "" {
+		key, err := sec.ResolveClientPrivateKey(useAuth)
+		if err != nil {
+			return err
+		}
+		var clientAuths []tor.ClientAuth
+		for _, fwd := range fwds {
+			if onionID, ok := fwd.Source().OnionID(); ok {
+				clientAuths = append(clientAuths, tor.ClientAuth{
+					OnionID:    onionID,
+					PrivateKey: key,
+				})
+			}
+		}
+		torOptions = append(torOptions, tor.ClientAuths(clientAuths...))
+	}
+	if len(requireAuth) > 0 {
+		fwdOptions = append(fwdOptions, forwarding.AuthClients(requireAuth))
 	}
 
 	var stopped bool

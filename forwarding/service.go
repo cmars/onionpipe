@@ -23,6 +23,7 @@ type Service struct {
 	exports []*config.Forward
 
 	nonAnonymous bool
+	authClients  []string
 	done         chan struct{}
 }
 
@@ -55,6 +56,14 @@ func NonAnonymous(s *Service) {
 	s.nonAnonymous = true
 }
 
+// AuthClients configures this service to only authorize the given client
+// public keys access to onion services.
+func AuthClients(authClients []string) Option {
+	return func(s *Service) {
+		s.authClients = authClients
+	}
+}
+
 // Start starts forwarding.
 func (s *Service) Start(ctx context.Context, options ...Option) (map[string]string, error) {
 	for i := range options {
@@ -81,6 +90,13 @@ func (s *Service) Start(ctx context.Context, options ...Option) (map[string]stri
 			aliasOnions[alias] = fwd.ID
 		}
 		return aliasOnions, nil
+	} else {
+		// If there are no export forwards, pass "context done" through to
+		// "service done".
+		go func() {
+			<-ctx.Done()
+			close(s.done)
+		}()
 	}
 	return nil, nil
 }
@@ -201,8 +217,8 @@ func (s *Service) startExporter(ctx context.Context) (map[string]*tor.OnionForwa
 		fwd, err := s.tor.Forward(exportCtx, &tor.ForwardConf{
 			PortForwards: exportFwds,
 			Key:          key,
-			Version3:     true,
 			NonAnonymous: s.nonAnonymous,
+			ClientAuths:  s.authClients,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("Failed to create onion forward: %v", err)
@@ -210,9 +226,11 @@ func (s *Service) startExporter(ctx context.Context) (map[string]*tor.OnionForwa
 		fwds[alias] = fwd
 	}
 
-	// Shut down forward w/context
 	go func() {
 		<-ctx.Done()
+		// Shut down forward w/context. Then indicate the service is done. This
+		// is necessary to coordinate a clean shutdown; if the forwards close
+		// after tor is closed, the process may panic.
 		for _, fwd := range fwds {
 			fwd.Close()
 		}
