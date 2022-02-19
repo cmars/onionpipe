@@ -8,9 +8,9 @@ import (
 
 	qt "github.com/frankban/quicktest"
 
-	"github.com/cmars/oniongrok/config"
-	"github.com/cmars/oniongrok/secrets"
-	"github.com/cmars/oniongrok/tor"
+	"github.com/cmars/onionpipe/config"
+	"github.com/cmars/onionpipe/secrets"
+	"github.com/cmars/onionpipe/tor"
 )
 
 func TestServiceCommands(t *testing.T) {
@@ -23,7 +23,7 @@ func TestServiceCommands(t *testing.T) {
 	})
 	home := c.Mkdir()
 	c.Setenv("HOME", home)
-	err := App().Run([]string{"oniongrok", "8080@test"})
+	err := App().Run([]string{"onionpipe", "8080@test"})
 	c.Assert(err, qt.IsNil)
 
 	c.Run("list services", func(c *qt.C) {
@@ -32,7 +32,7 @@ func TestServiceCommands(t *testing.T) {
 		c.Patch(&os.Stdout, out)
 		go func() {
 			defer out.Close()
-			err := App().Run([]string{"oniongrok", "service"})
+			err := App().Run([]string{"onionpipe", "service"})
 			c.Assert(err, qt.IsNil)
 		}()
 		var services secrets.ServicesPublic
@@ -42,20 +42,20 @@ func TestServiceCommands(t *testing.T) {
 		c.Assert(services["test"].Address, qt.Not(qt.Equals), "")
 	})
 	c.Run("add/rm services", func(c *qt.C) {
-		err := App().Run([]string{"oniongrok", "service", "new", "test"})
+		err := App().Run([]string{"onionpipe", "service", "new", "test"})
 		c.Assert(err, qt.ErrorMatches, `service "test" already exists`)
-		err = App().Run([]string{"oniongrok", "service", "new", "test2"})
+		err = App().Run([]string{"onionpipe", "service", "new", "test2"})
 		c.Assert(err, qt.IsNil)
-		err = App().Run([]string{"oniongrok", "service", "new", "test3"})
+		err = App().Run([]string{"onionpipe", "service", "new", "test3"})
 		c.Assert(err, qt.IsNil)
-		err = App().Run([]string{"oniongrok", "service", "rm", "test"})
+		err = App().Run([]string{"onionpipe", "service", "rm", "test"})
 		c.Assert(err, qt.IsNil)
 		in, out, err := os.Pipe()
 		c.Assert(err, qt.IsNil)
 		c.Patch(&os.Stdout, out)
 		go func() {
 			defer out.Close()
-			err := App().Run([]string{"oniongrok", "service"})
+			err := App().Run([]string{"onionpipe", "service"})
 			c.Assert(err, qt.IsNil)
 		}()
 		var services secrets.ServicesPublic

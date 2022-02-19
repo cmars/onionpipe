@@ -9,7 +9,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli/v2"
 
-	"github.com/cmars/oniongrok/secrets"
+	"github.com/cmars/onionpipe/secrets"
 )
 
 var forwardFlags = []cli.Flag{
@@ -42,13 +42,13 @@ func defaultSecretsPath() string {
 		log.Printf("failed to locate home directory: %v", err)
 		return ""
 	}
-	return filepath.Join(home, ".local", "share", "oniongrok", "secrets.json")
+	return filepath.Join(home, ".local", "share", "onionpipe", "secrets.json")
 }
 
-// App returns a new oniongrok command line app.
+// App returns a new onionpipe command line app.
 func App() *cli.App {
 	return &cli.App{
-		Name:   "oniongrok",
+		Name:   "onionpipe",
 		Usage:  "forward services through Tor; .onion addresses for anything",
 		Flags:  forwardFlags,
 		Action: Forward,

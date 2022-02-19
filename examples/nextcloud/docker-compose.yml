@@ -3,15 +3,15 @@ version: '3'
 volumes:
   nextcloud:
   db:
-  oniongrok:
+  onionpipe:
 
 services:
-  oniongrok:
-    image: ghcr.io/cmars/oniongrok:main
+  onionpipe:
+    image: ghcr.io/cmars/onionpipe:main
     restart: always
-    command: --secrets /var/lib/oniongrok/secrets.json app:80~80@nextcloud
+    command: --secrets /var/lib/onionpipe/secrets.json app:80~80@nextcloud
     volumes:
-      - oniongrok:/var/lib/oniongrok
+      - onionpipe:/var/lib/onionpipe
 
   db:
     image: postgres

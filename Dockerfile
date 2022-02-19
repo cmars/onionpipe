@@ -18,8 +18,8 @@ RUN touch /data/.build
 
 # Deploy image
 FROM tor
-COPY --from=build /src/oniongrok /oniongrok
+COPY --from=build /src/onionpipe /onionpipe
 COPY --from=build --chown=1000 /data/ /data/
 WORKDIR /data
 USER 1000
-ENTRYPOINT [ "/oniongrok" ]
+ENTRYPOINT [ "/onionpipe" ]

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cmars/oniongrok/secrets"
 	"github.com/urfave/cli/v2"
+
+	"github.com/cmars/onionpipe/secrets"
 )
 
 // ListServiceKeys implements the `service ls` command.

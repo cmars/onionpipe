@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/cmars/oniongrok/app"
+	"github.com/cmars/onionpipe/app"
 )
 
 func main() {
