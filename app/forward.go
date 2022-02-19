@@ -11,10 +11,10 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/cmars/oniongrok/config"
-	"github.com/cmars/oniongrok/forwarding"
-	"github.com/cmars/oniongrok/secrets"
-	"github.com/cmars/oniongrok/tor"
+	"github.com/cmars/onionpipe/config"
+	"github.com/cmars/onionpipe/forwarding"
+	"github.com/cmars/onionpipe/secrets"
+	"github.com/cmars/onionpipe/tor"
 )
 
 var startTor = func(ctx context.Context, options ...tor.Option) (*tor.Tor, error) {
@@ -30,7 +30,7 @@ type forwardingService interface {
 	Start(ctx context.Context, options ...forwarding.Option) (map[string]string, error)
 }
 
-// Forward sets up and operates oniongrok forwards.
+// Forward sets up and operates onionpipe forwards.
 func Forward(ctx *cli.Context) (cmdErr error) {
 	var fwds []*config.Forward
 	var sec *secrets.Secrets

@@ -1,5 +1,5 @@
 builds:
-- binary: oniongrok
+- binary: onionpipe
   goos:
   - darwin
   - linux
@@ -9,7 +9,7 @@ builds:
 brews:
 - tap:
     owner: cmars
-    name: homebrew-oniongrok
+    name: homebrew-onionpipe
     branch: main
     token: "{{ .Env.TAP_GITHUB_TOKEN }}"
   dependencies:

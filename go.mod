@@ -1,4 +1,4 @@
-module github.com/cmars/oniongrok
+module github.com/cmars/onionpipe
 
 go 1.16
 

@@ -15,7 +15,7 @@ import (
 	"golang.org/x/crypto/nacl/box"
 )
 
-// Secrets represents the format for storing oniongrok secret keys.
+// Secrets represents the format for storing onionpipe secret keys.
 type Secrets struct {
 	Version     string                   `json:"version"`
 	ServiceKeys map[string][]byte        `json:"serviceKeys"`

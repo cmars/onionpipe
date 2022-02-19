@@ -12,7 +12,7 @@ import (
 	"github.com/cretz/bine/tor"
 	"golang.org/x/crypto/ed25519"
 
-	"github.com/cmars/oniongrok/config"
+	"github.com/cmars/onionpipe/config"
 )
 
 // Service implements a forwarding service. It sets up and operates forwarding

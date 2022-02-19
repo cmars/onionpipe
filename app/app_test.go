@@ -8,9 +8,9 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/mitchellh/go-homedir"
 
-	"github.com/cmars/oniongrok/config"
-	"github.com/cmars/oniongrok/forwarding"
-	"github.com/cmars/oniongrok/tor"
+	"github.com/cmars/onionpipe/config"
+	"github.com/cmars/onionpipe/forwarding"
+	"github.com/cmars/onionpipe/tor"
 )
 
 func init() {
@@ -49,7 +49,7 @@ func TestApp(t *testing.T) {
 		home := c.Mkdir()
 		c.Setenv("HOME", home)
 		fwdSvc.fwds = nil
-		err := App().Run([]string{"oniongrok", "8080"})
+		err := App().Run([]string{"onionpipe", "8080"})
 		c.Assert(err, qt.IsNil)
 
 		c.Assert(fwdSvc.fwds, qt.HasLen, 1)
@@ -61,7 +61,7 @@ func TestApp(t *testing.T) {
 		home := c.Mkdir()
 		c.Setenv("HOME", home)
 		fwdSvc.fwds = nil
-		err := App().Run([]string{"oniongrok", "8080@test"})
+		err := App().Run([]string{"onionpipe", "8080@test"})
 		c.Assert(err, qt.IsNil)
 
 		c.Assert(fwdSvc.fwds, qt.HasLen, 1)
@@ -75,14 +75,14 @@ func TestApp(t *testing.T) {
 		home := c.Mkdir()
 		c.Setenv("HOME", home)
 		fwdSvc.fwds = nil
-		err := App().Run([]string{"oniongrok", "--anonymous=false", "8080@test"})
+		err := App().Run([]string{"onionpipe", "--anonymous=false", "8080@test"})
 		c.Assert(err, qt.IsNil)
 
 		c.Assert(fwdSvc.fwds, qt.HasLen, 1)
 		c.Assert(fwdSvc.fwds[0].Description(fwdSvc.onions), qt.Equals, "127.0.0.1:8080 => abc.onion:8080")
 		_, err = os.Stat(defaultSecretsPath())
 		c.Assert(os.IsNotExist(err), qt.IsTrue)
-		_, err = os.Stat(home + "/.local/share/oniongrok/secrets.not-anonymous.json")
+		_, err = os.Stat(home + "/.local/share/onionpipe/secrets.not-anonymous.json")
 		c.Assert(err, qt.IsNil)
 	})
 }

@@ -15,7 +15,7 @@ var fs embed.FS
 
 var torPath string
 
-// init configures oniongrok to use an embedded tor static binary. The binary
+// init configures onionpipe to use an embedded tor static binary. The binary
 // is extracted to a temporary directory and executed from there. This is
 // currently a work in progress and not yet ready for distribution.
 func init() {

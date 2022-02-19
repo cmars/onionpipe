@@ -8,7 +8,7 @@ import (
 )
 
 // init uses libtor directly in the same process, rather than by controlling a
-// tor executable. This configuration allows oniongrok to run as a single executable
+// tor executable. This configuration allows onionpipe to run as a single executable
 // with no unpacking required, but has some quirks:
 //
 // libtor is not as up-to-date with the latest Tor release. It may be missing

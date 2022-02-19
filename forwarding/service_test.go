@@ -16,9 +16,9 @@ import (
 	qt "github.com/frankban/quicktest"
 	"golang.org/x/net/context/ctxhttp"
 
-	"github.com/cmars/oniongrok/config"
-	"github.com/cmars/oniongrok/forwarding"
-	"github.com/cmars/oniongrok/tor"
+	"github.com/cmars/onionpipe/config"
+	"github.com/cmars/onionpipe/forwarding"
+	"github.com/cmars/onionpipe/tor"
 )
 
 const skipForwardingTests = "SKIP_FORWARDING_TESTS"

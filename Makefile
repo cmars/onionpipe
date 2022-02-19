@@ -1,19 +1,19 @@
 
-all: oniongrok
+all: onionpipe
 
-oniongrok_libtor:
+onionpipe_libtor:
 	go build -o $@ -v -x -tags "staticOpenssl,staticZlib,staticLibevent,libtor" .
 	strip $@
 
-oniongrok_embed:
+onionpipe_embed:
 	go build -o $@ -v -x -tags "embed" .
 
-oniongrok:
+onionpipe:
 	go build -o $@ .
 
 .PHONY: docker
 docker:
-	docker build -t oniongrok .
+	docker build -t onionpipe .
 
 .PHONY: test
 test:
@@ -27,4 +27,4 @@ coverage:
 
 .PHONY: clean
 clean:
-	$(RM) oniongrok
+	$(RM) onionpipe

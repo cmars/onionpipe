@@ -7,8 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cmars/oniongrok/secrets"
 	"github.com/urfave/cli/v2"
+
+	"github.com/cmars/onionpipe/secrets"
 )
 
 // ListClientKeys implements the `client ls` command.

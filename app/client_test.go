@@ -7,7 +7,7 @@ import (
 
 	qt "github.com/frankban/quicktest"
 
-	"github.com/cmars/oniongrok/secrets"
+	"github.com/cmars/onionpipe/secrets"
 )
 
 func TestClientCommands(t *testing.T) {
@@ -21,7 +21,7 @@ func TestClientCommands(t *testing.T) {
 		c.Patch(&os.Stdout, out)
 		go func() {
 			defer out.Close()
-			err := App().Run([]string{"oniongrok", "client"})
+			err := App().Run([]string{"onionpipe", "client"})
 			c.Assert(err, qt.IsNil)
 		}()
 		var clients secrets.ClientsPublic
@@ -30,22 +30,22 @@ func TestClientCommands(t *testing.T) {
 		c.Assert(clients, qt.HasLen, 0)
 	})
 	c.Run("add/rm clients", func(c *qt.C) {
-		err := App().Run([]string{"oniongrok", "client", "new", "test"})
+		err := App().Run([]string{"onionpipe", "client", "new", "test"})
 		c.Assert(err, qt.IsNil)
-		err = App().Run([]string{"oniongrok", "client", "new", "test"})
+		err = App().Run([]string{"onionpipe", "client", "new", "test"})
 		c.Assert(err, qt.ErrorMatches, `client "test" already exists`)
-		err = App().Run([]string{"oniongrok", "client", "new", "test2"})
+		err = App().Run([]string{"onionpipe", "client", "new", "test2"})
 		c.Assert(err, qt.IsNil)
-		err = App().Run([]string{"oniongrok", "client", "new", "test3"})
+		err = App().Run([]string{"onionpipe", "client", "new", "test3"})
 		c.Assert(err, qt.IsNil)
-		err = App().Run([]string{"oniongrok", "client", "rm", "test"})
+		err = App().Run([]string{"onionpipe", "client", "rm", "test"})
 		c.Assert(err, qt.IsNil)
 		in, out, err := os.Pipe()
 		c.Assert(err, qt.IsNil)
 		c.Patch(&os.Stdout, out)
 		go func() {
 			defer out.Close()
-			err := App().Run([]string{"oniongrok", "client"})
+			err := App().Run([]string{"onionpipe", "client"})
 			c.Assert(err, qt.IsNil)
 		}()
 		var clients secrets.ClientsPublic
