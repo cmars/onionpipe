@@ -15,10 +15,12 @@ from anywhere in the world, across all sorts of network obstructions -- your
 ISP doesn't allow ingress traffic to your home lab, your clients might be in
 heavily firewalled environments (public WiFi, mobile tether), etc.
 
-With onionpipe, that service doesn't need a public IPv4 or IPv6 ingress. You'll
-eventually be able to restrict access with auth tokens. And you don't need to
-rely on, and share your personal data with for-profit services (like Tailscale,
-ZeroTier, etc.) to get to it.
+With onionpipe, that service doesn't need a public IPv4 or IPv6 ingress. You
+can publish services with a globally-unique persistent onion address, and share
+access securely and privately to your own allowlist of authorized keys.
+
+You don't need to rely on, and share your personal data with for-profit
+services (like Tailscale, ZeroTier, etc.) to get to it.
 
 ### What can I do with it right now?
 
@@ -188,19 +190,20 @@ dependencies installed into your shell context.
 
 ### What features are planned?
 
-Operate from a yaml file.
+Declare forwards and operate from a yaml file rather than CLI arguments.
 
 ```
 onionpipe --config config.yaml
 ```
 
-Considering a TUI.
+Considering a fancy TUI.
+
+Considering a control plane for onionpipe SDN orchestration.
+
+Stay tuned.
 
 ### How can I contribute?
 
-Pull requests are welcome in implementing the above wishlist / planned
-functionality.
-
-Otherwise, donate to the Tor project with your dollar, or by hosting honest
-proxies and exit nodes. If you like and use this project, support the public
-infrastructure that benefits us all.
+Donate to the Tor project with your dollar, or by hosting honest proxies and
+exit nodes. If you like and use this project, support the public infrastructure
+that benefits us all and makes this wonderful magic possible.
