@@ -1,2 +1,5 @@
 /onionpipe*
 data-dir-*
+/dist
+/tor/include
+/tor/lib

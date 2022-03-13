@@ -1,13 +1,6 @@
 
 all: onionpipe
 
-onionpipe_libtor:
-	go build -o $@ -v -x -tags "staticOpenssl,staticZlib,staticLibevent,libtor" .
-	strip $@
-
-onionpipe_embed:
-	go build -o $@ -v -x -tags "embed" .
-
 onionpipe:
 	go build -o $@ .
 

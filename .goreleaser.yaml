@@ -1,11 +1,31 @@
 builds:
-- binary: onionpipe
+- id: onionpipe
+  binary: onionpipe
   goos:
   - darwin
   - linux
   - windows
   goarch:
   - amd64
+- id: onionpipe-linux-static
+  binary: onionpipe-linux-static
+  goos:
+  - linux
+  goarch:
+  - amd64
+  hooks:
+    pre: ./scripts/embed_linux.bash
+  tags:
+  - embed
+
+archives:
+- id: onionpipe
+  builds:
+  - onionpipe
+- id: onionpipe-linux-static
+  builds:
+  - onionpipe-linux-static
+
 brews:
 - tap:
     owner: cmars
