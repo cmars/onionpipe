@@ -1,6 +1,9 @@
 name: static-linux
 
 on:
+  push:
+    tags:
+      - 'v*'
   release:
     types:
       - published
