@@ -1,9 +1,6 @@
 name: static-darwin
 
 on:
-  push:
-    tags:
-      - 'v*'
   release:
     types:
       - published
