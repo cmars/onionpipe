@@ -1,4 +1,4 @@
-name: static-linux
+name: static-darwin
 
 on:
   release:
