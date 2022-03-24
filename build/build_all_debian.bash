@@ -4,6 +4,6 @@ cd $(dirname $0)
 
 docker build -t onionpipe-embed-linux:latest -f Dockerfile .
 if [ ! -e ../tor/lib/libtor.a ]; then
-    docker run --rm -it -v $(pwd)/..:/go/src/onionpipe onionpipe-embed-linux:latest bash -eux ./build/build_tor_debian.bash
+    docker run --rm -v $(pwd)/..:/go/src/onionpipe onionpipe-embed-linux:latest bash -eux ./build/build_tor_debian.bash
 fi
-docker run --rm -it -v $(pwd)/..:/go/src/onionpipe onionpipe-embed-linux:latest bash -eux ./build/build_onionpipe.bash
+docker run --rm -v $(pwd)/..:/go/src/onionpipe onionpipe-embed-linux:latest bash -eux ./build/build_onionpipe.bash
