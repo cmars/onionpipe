@@ -27,9 +27,7 @@ jobs:
       - name: Build static binary
         working-directory: ${{ github.workspace }}
         run: |
-          pwd
-          ls -l
-          ./builds/build_all_darwin.bash
+          ./build/build_all_darwin.bash
 
       - name: Upload darwin binary
         uses: actions/upload-release-asset@v1
