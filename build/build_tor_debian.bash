@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eux
 
-TOR_RELEASE=0.4.6
+TOR_RELEASE=0.4.7
 
 cd $(dirname $0)/..
 project_root=$(pwd)

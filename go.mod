@@ -8,8 +8,10 @@ require (
 	github.com/frankban/quicktest v1.14.0
 	github.com/google/go-cmp v0.5.6
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/urfave/cli/v2 v2.6.0
-	golang.org/x/crypto v0.0.0-20220507011949-2cf3adece122
-	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4
-	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
+	github.com/urfave/cli/v2 v2.11.1
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
+	golang.org/x/net v0.0.0-20220805013720-a33c5aa5df48
+	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
+	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
