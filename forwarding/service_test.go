@@ -31,8 +31,8 @@ var testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 })
 
 const testTimeout = 300 * time.Second
-const forwardTimeout = 60 * time.Second
-const clientTimeout = 60 * time.Second
+const forwardTimeout = 90 * time.Second
+const clientTimeout = 90 * time.Second
 const closeTimeout = 30 * time.Second
 
 // Tor Browser User Manual
@@ -61,11 +61,11 @@ func TestIntegration(t *testing.T) {
 	c.Cleanup(srv.Close)
 
 	// Find a likely open port for importing a remote server
-	l, err := net.Listen("tcp4", "127.0.0.1:0")
-	c.Assert(err, qt.IsNil)
-	importPort := l.Addr().(*net.TCPAddr).Port
-	c.Assert(l.Close(), qt.IsNil)
-	c.Assert(importPort, qt.Not(qt.Equals), 0)
+	importPort := 53281
+	if importPortEnv := os.Getenv("FORWARDING_TEST_IMPORT_PORT"); importPortEnv != "" {
+		importPort, err = strconv.Atoi(importPortEnv)
+		c.Assert(err, qt.IsNil)
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	c.Cleanup(cancel)
