@@ -14,3 +14,4 @@ RUN apt-get update -qq && \
 
 VOLUME /go/src/onionpipe
 WORKDIR /go/src/onionpipe
+RUN git config --global --add safe.directory /go/src/onionpipe
