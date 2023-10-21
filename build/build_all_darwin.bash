@@ -4,7 +4,7 @@ cd $(dirname $0)
 
 brew install \
     pkg-config autoconf@2.69 automake \
-    openssl@1.1 \
+    openssl \
     libevent \
     zlib
 
