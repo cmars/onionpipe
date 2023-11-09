@@ -13,13 +13,12 @@ RUN go mod download
 COPY . /src/
 ENV SKIP_FORWARDING_TESTS=1
 RUN make all test
-WORKDIR /data
-RUN touch /data/.build
 
 # Deploy image
 FROM tor
+RUN useradd --create-home -d /data -s /bin/bash onionpipe
 COPY --from=build /src/onionpipe /onionpipe
-COPY --from=build --chown=1000 /data/ /data/
+VOLUME [ "/data" ]
 WORKDIR /data
-USER 1000
+USER onionpipe
 ENTRYPOINT [ "/onionpipe" ]
