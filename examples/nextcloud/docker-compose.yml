@@ -9,17 +9,15 @@ services:
   onionpipe:
     image: ghcr.io/cmars/onionpipe:main
     restart: always
-    command: --secrets /var/lib/onionpipe/secrets.json app:80~80@nextcloud
+    command: --secrets /data/secrets.json app:80~80@nextcloud
     volumes:
-      - onionpipe:/var/lib/onionpipe
+      - onionpipe:/data
 
   db:
     image: postgres
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
-    ports:
-      - '5432'
     environment:
       - POSTGRES_USER=nextcloud
       - POSTGRES_PASSWORD=changeme
@@ -28,8 +26,6 @@ services:
   app:
     image: nextcloud
     restart: always
-    ports:
-      - 8080:80
     links:
       - db
     volumes:
