@@ -142,13 +142,8 @@ sd6aq2r6jvuoeisrudq7jbqufjh6nck5buuzjmgalicgwrobgfj4lkqd.onion:80 => 127.0.0.1:7
 
 ### How do I install it?
 
-Each commit into main triggers an automated release, which publishes a Homebrew
-tap and Docker image.
-
-#### Homebrew
-
-    brew tap cmars/onionpipe
-    brew install onionpipe
+Each commit into main triggers an automated release, which publishes a Docker
+image.
 
 #### Docker
 
