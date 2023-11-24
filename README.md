@@ -167,6 +167,9 @@ your `$PATH`.
 
 #### Static standalone binary with libtor
 
+See the [latest release](https://github.com/cmars/onionpipe/releases/latest)
+for Linux and Darwin binaries.
+
 Should theoretically work on: Linux, Darwin, Android (gomobile) according to
 the [berty.tech/go-libtor](https://github.com/berty/go-libtor) README. There
 are some quirks; see comments in `tor/init_libtor.go` for details.
