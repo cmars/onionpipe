@@ -1,6 +1,6 @@
 FROM golang:1.20 as golang
 
-FROM debian:11 as build
+FROM debian:bookworm-20231030 as build
 COPY --from=golang /usr/local/go /usr/local/go
 ENV PATH=/usr/local/go/bin:$PATH
 ENV GOPATH=${GOPATH:-/go}
