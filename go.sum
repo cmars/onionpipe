@@ -3,6 +3,8 @@ github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46t
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/cretz/bine v0.2.1-0.20220211152646-874b17b5a830 h1:PlohB7QkCA6uleGKjd8Axsfml+em/0F1HZ5GH3lTBd8=
 github.com/cretz/bine v0.2.1-0.20220211152646-874b17b5a830/go.mod h1:WU4o9QR9wWp8AVKtTM1XD5vUHkEqnf2vVSo6dBqbetI=
+github.com/cretz/bine v0.2.1-0.20221201125941-b9d31d9c7866 h1:8Cji9JDEuYibvDQrWHvc42r9/HxjlD2kahN67LECXFk=
+github.com/cretz/bine v0.2.1-0.20221201125941-b9d31d9c7866/go.mod h1:WU4o9QR9wWp8AVKtTM1XD5vUHkEqnf2vVSo6dBqbetI=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/frankban/quicktest v1.14.0 h1:+cqqvzZV87b4adx/5ayVOaYZ2CrvM4ejQvUdBzPPUss=
