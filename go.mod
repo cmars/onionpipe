@@ -3,7 +3,7 @@ module github.com/cmars/onionpipe
 go 1.20
 
 require (
-	github.com/cretz/bine v0.2.1-0.20220211152646-874b17b5a830
+	github.com/cretz/bine v0.2.1-0.20221201125941-b9d31d9c7866
 	github.com/frankban/quicktest v1.14.6
 	github.com/google/go-cmp v0.6.0
 	github.com/mitchellh/go-homedir v1.1.0
