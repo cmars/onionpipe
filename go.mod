@@ -9,7 +9,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/urfave/cli/v2 v2.27.2
 	golang.org/x/crypto v0.23.0
-	golang.org/x/net v0.24.0
+	golang.org/x/net v0.25.0
 )
 
 require (
