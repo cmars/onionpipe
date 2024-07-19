@@ -38,10 +38,11 @@ jobs:
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
+        if: ${{ steps.tag.outputs.new == "true" }}
         with:
           distribution: goreleaser
-          version: latest
-          args: release --rm-dist
+          version: 'v2'
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
           TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
