@@ -1,6 +1,6 @@
 module github.com/cmars/onionpipe
 
-go 1.20
+go 1.22
 
 require (
 	github.com/cretz/bine v0.2.1-0.20221201125941-b9d31d9c7866
