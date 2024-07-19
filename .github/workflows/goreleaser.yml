@@ -38,7 +38,7 @@ jobs:
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
-        if: ${{ steps.tag.outputs.new == "true" }}
+        if: ${{ steps.tag.outputs.new == 'true' }}
         with:
           distribution: goreleaser
           version: 'v2'
