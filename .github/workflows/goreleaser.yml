@@ -25,13 +25,13 @@ jobs:
         run: |
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      - name: Install ccv
-        run: go install github.com/smlx/ccv/cmd/ccv@latest
+      - name: Install git-semver
+        run: go install github.com/srbry/git-semver@10c3dca9978ca04c63f25f9f8c87d22d0deb2705
       - name: Bump tag if necessary
         id: tag
         run: |
-          if [ -z $(git tag -l $(ccv)) ]; then
-            git tag $(ccv)
+          if [ -z $(git tag -l $(git-semver)) ]; then
+            git tag $(git-semver)
             git push --tags
             echo "new=true" >> $GITHUB_OUTPUT
           fi
