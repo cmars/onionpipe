@@ -30,8 +30,9 @@ jobs:
       - name: Bump tag if necessary
         id: tag
         run: |
-          if [ -z $(git tag -l $(git-semver)) ]; then
-            git tag $(git-semver)
+          nextver=v$(git-semver)
+          if [ -z $(git tag -l ${nextver}) ]; then
+            git tag ${nextver}
             git push --tags
             echo "new=true" >> $GITHUB_OUTPUT
           fi

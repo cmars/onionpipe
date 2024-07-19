@@ -1,3 +1,4 @@
+version: 2
 builds:
 - id: onionpipe
   binary: onionpipe
@@ -9,7 +10,8 @@ builds:
   - amd64
 
 brews:
-- tap:
+- name: onionpipe
+  repository:
     owner: cmars
     name: homebrew-onionpipe
     branch: main
