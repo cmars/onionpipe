@@ -1,4 +1,4 @@
-FROM golang:1.22 as golang
+FROM golang:1.23 as golang
 
 FROM debian:bookworm-20240701 as build
 COPY --from=golang /usr/local/go /usr/local/go
