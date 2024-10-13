@@ -7,13 +7,13 @@ require (
 	github.com/frankban/quicktest v1.14.6
 	github.com/google/go-cmp v0.6.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/urfave/cli/v2 v2.27.3
+	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/crypto v0.26.0
 	golang.org/x/net v0.28.0
 )
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
