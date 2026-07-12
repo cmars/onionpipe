@@ -1,5 +1,5 @@
 # Build image
-FROM debian:12 AS tor
+FROM debian:13 AS tor
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && apt-get install -y apt-transport-https wget gnupg
 RUN echo "deb [signed-by=/usr/share/keyrings/tor-archive-keyring.gpg] https://deb.torproject.org/torproject.org bookworm main" >/etc/apt/sources.list.d/tor.list
